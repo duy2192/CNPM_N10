@@ -9,45 +9,44 @@
           >
         </div>
         <div class="">
-          <div class="row mt-5">
+          <div class="row mt-5" v-if='this.data1.length>0'>
             <div class="col-md-6 col-lg-6 border border-info rounded">
               <span class="font-weight-bold text-title1">Việt Nam</span>
               <div class="row text-center">
-                <div class="col text-danger text-content font-weight-bold">
-                  Số ca nhiễm <br />{{this.data[0].scn}}
+                <div class="col text-danger text-content font-weight-bold" >
+                  Số ca nhiễm <br />{{this.data1[0].scn}}
                 </div>
                 <div class="col text-warning text-content font-weight-bold">
-                  Đang điều trị <br />{{this.data[0].dangnhiem}}
+                  Đang điều trị <br />{{this.data1[0].dangnhiem}}
                 </div>
                 <div class="col text-success text-content font-weight-bold">
-                  Khỏi <br />{{this.data[0].khoi}}
+                  Khỏi <br />{{this.data1[0].khoi}}
                 </div>
                 <div class="col text-secondary text-content font-weight-bold">
-                  Tử vong <br />{{this.data[0].tuvong}}
+                  Tử vong <br />{{this.data1[0].tuvong}}
                 </div>
               </div>
             </div>
             <div class="col-md-6 col-lg-6 border border-info rounded">
               <span class="font-weight-bold text-title1">Thế giới</span>
               <div class="row text-center">
-                <div class="col text-danger text-content font-weight-bold">
-                  Số ca nhiễm <br />{{this.data[1].scn}}
+                <div class="col text-danger text-content font-weight-bold" >
+                  Số ca nhiễm <br />{{this.data1[1].scn}}
                 </div>
                 <div class="col text-warning text-content font-weight-bold">
-                  Đang nhiễm<br />{{this.data[1].dangnhiem}}
+                  Đang nhiễm<br />{{this.data1[1].dangnhiem}}
                 </div>
                 <div class="col text-success text-content font-weight-bold">
-                  Khỏi <br />{{this.data[1].khoi}}
+                  Khỏi <br />{{this.data1[1].khoi}}
                 </div>
                 <div class="col text-secondary text-content font-weight-bold">
-                  Tử vong <br />{{this.data[1].tuvong}}
+                  Tử vong <br />{{this.data1[1].tuvong}}
                 </div>
               </div>
             </div>
           </div>
-
-          <div class="mt-5">
-            <table class="table">
+          <div class="mt-5 scrolltable">
+            <table class="table text-center table-bordered">
               <thead>
                 <tr>
                   <th>Bệnh nhân</th>
@@ -58,12 +57,12 @@
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td scope="row"></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
+                <tr v-for="(news) in this.data2" v-bind:key="news.bn" :class="{'text-danger' : news.tinhtrang=='Đang điều trị', 'text-success': news.tinhtrang=='Khỏi'}">
+                  <td scope="row">{{news.bn}}</td>
+                  <td>{{news.tuoi}}</td>
+                  <td>{{news.que}}</td>
+                  <td>{{news.tinhtrang}}</td>
+                  <td>{{news.quoctich}}</td>
                 </tr>
               </tbody>
             </table>
@@ -76,17 +75,21 @@
 <script>
 import Header from "@/components/Header";
 import {getDataCovid19} from '../APIs/dataAPI'
+import {getDataCovid19VN} from '../APIs/dataAPI'
 export default {
   components: { Header },
   name: "Home",
   data() {
     return {
-      data: [],
+      data1: [],
+      data2: []
     };
   },
   async created() {
    let data1= await getDataCovid19()
-  this.data=data1
+    this.data1=data1
+   let data2= await getDataCovid19VN()
+   this.data2=data2
   },
 };
 </script>
@@ -104,6 +107,10 @@ export default {
 }
 .text-content {
   font-size: 18px;
+}
+.scrolltable{
+  height: 400px;
+  overflow: scroll;
 }
 @media screen and (max-width: 768px) {
   .text-content {

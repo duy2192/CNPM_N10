@@ -4,7 +4,7 @@ const {ObjectId}=Schema
 
 const connectDatabase=async()=>{
     try{
-        let uri='mongodb://da29:123456@127.0.0.1:27018/vueapp'
+        let uri='mongodb://da29:123456@35.240.169.246:27018/vueapp'
         let options={
             connectTimeoutMS:10000,
             useNewUrlParser:true,

@@ -11,8 +11,9 @@
       crossorigin="anonymous"
     />
     <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
     <link
-      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap"
       rel="stylesheet"
     />
     <router-view />
@@ -27,7 +28,7 @@ export default {
 
 <style>
 * {
-  font-family: "Roboto", sans-serif;
+  font-family: "Open Sans", sans-serif;
   box-sizing: border-box;
 }
 </style>

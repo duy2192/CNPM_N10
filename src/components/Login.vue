@@ -1,9 +1,9 @@
 <template>
   <div class="main">
-    <div class="row">
-      <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
-        <h5 class="text-center">Login to your account</h5>
-        <div class="form-group">
+    <div class="row mt-5">
+      <div class="col-sm-9 col-md-7 col-lg-5 mx-auto ">
+        <h5 class="text-center text-primary font-weight-bold mt-5">Login to your account</h5>
+        <div class="form-group mt-5">
           <input type="text" id="inputEmail"
             v-model="email"
             name="email"
@@ -28,7 +28,7 @@
         <span v-show="errors.has('password')" 
           class="text-danger">{{ errors.first('password') }}
         </span>
-        <button class="btn-lg btn-primary btn-block text-uppercase"
+        <button class="btn-lg btn-primary btn-block text-uppercase mb-5"
           @click="login">
           Login
         </button>
@@ -38,18 +38,17 @@
 </template>
 
 <script>
-
+import {userLogin} from '../APIs/usersAPI'
 export default {
   name: 'Login',
   //props = "Thuộc tính public"
   props: {
   },
-
   data() {
     return {
       //Các thuộc tính "private" => Giống "state" trong React !       
       email:'',
-      password:''
+      password:'',
     }
   },
   
@@ -61,9 +60,16 @@ export default {
       if(!result) {
         return
       }
+      let loginResponse = await userLogin(this.email,this.password)
 
-      alert(`Bạn bấm đăng nhập. Email: ${this.email}, password: ${this.password}`)
-    },
+    if(Object.keys(loginResponse).length>0){
+      this.$session.start()
+      this.$session.set('loggedInUser',loginResponse)
+      this.$router.push('/admin')
+    } else{
+    alert('Đăng nhập thất bại!!')
+    }
+},
   },  
 }
 </script>
@@ -73,11 +79,9 @@ export default {
 
 .main{
     background-image: url('../assets/home-bg.jpg');
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;      
-  height: 100%;
-
-
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;      
+    height: 100%;
 }
 </style>

@@ -65,11 +65,11 @@ router.get('/resetpassword', async (req, res) =>{
 router.post('/login', async (req, res) =>{	
 	let {email, password} = req.body
     try {
-		let tokenKey = await loginUser(email, password)
+		let data = await loginUser(email, password)
 		res.json({
 			result: 'ok',
 			message: 'Đăng nhập user thành công',
-			tokenKey
+			data
 	  	})
 	} catch(error) {
 		res.json({

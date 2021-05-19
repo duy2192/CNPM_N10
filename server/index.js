@@ -23,3 +23,5 @@ app.use('/news',newsRouter)
 
 const data=require('./routes/data.js')
 app.use('/data',data)
+
+  

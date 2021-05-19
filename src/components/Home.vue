@@ -14,16 +14,16 @@
               <span class="font-weight-bold text-title1">Việt Nam</span>
               <div class="row text-center">
                 <div class="col text-danger text-content font-weight-bold">
-                  Số ca nhiễm <br />2000
+                  Số ca nhiễm <br />{{this.data[0].scn}}
                 </div>
                 <div class="col text-warning text-content font-weight-bold">
-                  Đang điều trị <br />2000
+                  Đang điều trị <br />{{this.data[0].dangnhiem}}
                 </div>
                 <div class="col text-success text-content font-weight-bold">
-                  Khỏi <br />2000
+                  Khỏi <br />{{this.data[0].khoi}}
                 </div>
                 <div class="col text-secondary text-content font-weight-bold">
-                  Tử vong <br />2000
+                  Tử vong <br />{{this.data[0].tuvong}}
                 </div>
               </div>
             </div>
@@ -31,16 +31,16 @@
               <span class="font-weight-bold text-title1">Thế giới</span>
               <div class="row text-center">
                 <div class="col text-danger text-content font-weight-bold">
-                  Số ca nhiễm <br />2000
+                  Số ca nhiễm <br />{{this.data[1].scn}}
                 </div>
                 <div class="col text-warning text-content font-weight-bold">
-                  Đang nhiễm<br />2000
+                  Đang nhiễm<br />{{this.data[1].dangnhiem}}
                 </div>
                 <div class="col text-success text-content font-weight-bold">
-                  Khỏi <br />2000
+                  Khỏi <br />{{this.data[1].khoi}}
                 </div>
                 <div class="col text-secondary text-content font-weight-bold">
-                  Tử vong <br />2000
+                  Tử vong <br />{{this.data[1].tuvong}}
                 </div>
               </div>
             </div>
@@ -75,9 +75,19 @@
 </template>
 <script>
 import Header from "@/components/Header";
+import {getDataCovid19} from '../APIs/dataAPI'
 export default {
   components: { Header },
   name: "Home",
+  data() {
+    return {
+      data: [],
+    };
+  },
+  async created() {
+   let data1= await getDataCovid19()
+  this.data=data1
+  },
 };
 </script>
 <style scoped>
@@ -96,8 +106,8 @@ export default {
   font-size: 18px;
 }
 @media screen and (max-width: 768px) {
-.text-content {
-  font-size: 15px;
-}
+  .text-content {
+    font-size: 15px;
+  }
 }
 </style>

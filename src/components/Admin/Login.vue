@@ -1,8 +1,8 @@
 <template>
-  <div class="main">
-    <div class="row mt-5">
-      <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
-        <h5 class="text-center text-primary font-weight-bold mt-5">
+  <div class="container">
+    <div class="row mt-5 border rounded border-primary bg-primary">
+      <div class="col-sm-9 col-md-7 col-lg-5 mx-auto ">
+        <h5 class="text-center text-dark font-weight-bold mt-5">
           {{ this.logintext }}
         </h5>
         <div class="form-group mt-5">
@@ -20,7 +20,7 @@
             autofocus
           />
           <span v-show="errors.has('email')" class="text-danger">
-            {{ errors.first("email") }}
+            Email không khả dụng!
           </span>
         </div>
         <div class="form-group">
@@ -38,9 +38,9 @@
           />
         </div>
         <span v-show="errors.has('password')" class="text-danger"
-          >{{ errors.first("password") }}
+          >Chưa điền mật khẩu
         </span>
-        <button class="btn btn-primary btn-block text-uppercase" @click="login">
+        <button class="btn btn-success btn-block text-uppercase" @click="login">
           {{ this.logintext }}
         </button>
         <p
@@ -54,7 +54,7 @@
 </template>
 
 <script>
-import { userLogin } from "../APIs/usersAPI";
+import { reqresetpasswd, userLogin } from "../../APIs/usersAPI";
 export default {
   name: "Login",
   //props = "Thuộc tính public"
@@ -68,20 +68,23 @@ export default {
       logintext: "Đăng nhập",
     };
   },
-
+  beforeCreate(){
+    if (this.$session.exists()) {
+        this.$router.push("/admin");
+    }
+  },
   //Các phương thức "private"
   methods: {
     async login() {
-      if(this.logintext=='Đăng nhập'){
-      //Giờ chúng ta cần "validate" các thông tin đăng nhập
       let result = await this.$validator.validateAll();
       if (!result) {
         return;
       }
+      if(this.logintext=='Đăng nhập'){
       let loginResponse = await userLogin(this.email, this.password);
 
       if (Object.keys(loginResponse).length > 0) {
-        this.$session.start();
+        this.$session.start()
         this.$session.set("loggedInUser", loginResponse);
         this.$router.push("/admin");
       } else {
@@ -89,10 +92,16 @@ export default {
       }
     }
     else{
-      alert('Vui lòng kiểm tra email!')
+      const reqpasswd= await reqresetpasswd(this.email)
+      if(reqpasswd.result=='ok'){
+        alert('Vui lòng kiểm tra Email')
+      }else{
+        alert(reqpasswd.message)
+      }
     }
     },
     async forgotclick() {
+      
       if (this.forgot == "Quên mật khẩu") {
         this.forgot = "Đăng nhập";
         this.logintext = "Quên mật khẩu";
@@ -105,14 +114,7 @@ export default {
   },
 };
 </script>
-
 <!-- scoped: Chỉ có tác dụng trong file .vue này -->
 <style scoped>
-.main {
-  background-image: url("../assets/home-bg.jpg");
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  height: 100%;
-}
+
 </style>

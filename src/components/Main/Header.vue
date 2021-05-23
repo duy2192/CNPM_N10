@@ -4,9 +4,8 @@
       <input id="nav-toggle" type="checkbox" />
       <div class="logo">co <strong>Vid19</strong></div>
       <ul class="links">
-        <li><a href="#">Trang chủ</a></li>
-        <li><a href="#">Tin tức</a></li>
-        <li><a href="#">Biểu hiện & Cách phòng tránh</a></li>
+        <li><router-link :to="{path:'/'}">Trang chủ</router-link></li> 
+        <li><router-link :to="{path:'/news'}">Tin tức</router-link></li>
         <li><a href="#">Điều cần biết</a></li>
       </ul>
       <label for="nav-toggle" class="icon-burger">
@@ -40,7 +39,7 @@ nav {
   font-family: "Montserrat", sans-serif;
   padding: 0 5%;
   height: 100px;
-  background-color: #3e65da;
+  background-color: #303C54;
 }
 nav .logo {
   float: left;

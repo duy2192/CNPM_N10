@@ -1,26 +1,42 @@
+/* eslint-disable no-mixed-spaces-and-tabs */
 const express=require('express')
 const router=express.Router()
 const { 
-    User,
+	reqresetPassword,
     resetPassword,
 	insertUser, 
     activeUser, 
     loginUser, 
     verifyJWT,
-    blockUser
+    blockUser,
+	getUser,
+	changePassword
 }=require('../models/models/User')
-const { sendEmailresetPassword } = require('../scripts/sendmail')
-
 
 router.use((req,res,next)=>{
     console.log('Time: ',Date.now())
     next()
 })
 
+router.get('/getuser', async (req, res) =>{	    
+	try {
+		let data =await getUser()
+		res.json({
+			result: 'ok',
+			message: 'API danh sách User',
+			data
+		})
+	} catch(error) {
+		res.json({
+			result: 'failed',
+			message: `Lỗi API danh sách User. Error: ${error}`
+		})
+	}
+})
 router.post('/registerUser', async (req, res) =>{
-	let {name, email, password} = req.body 
+	let {name, email} = req.body 
     try {
-        await insertUser(name, email, password)
+        await insertUser(name, email)
 	  	res.json({
 	  		result: 'ok',
 	  		message: 'Đăng ký user thành công, bạn cần mở mail để kích hoạt'
@@ -38,29 +54,13 @@ router.get('/activeuser', async (req, res) =>{
     
 	try {
 		await activeUser(email, secretKey)
-		res.send(`<h1 style="color:MediumSeaGreen;">Kích hoạt User thành công</h1>`)
+		res.send(`<div style='text-align: center'><h1 style="color:MediumSeaGreen;">Kích hoạt User thành công</h1><br>
+		<a href='http://localhost:8080/#/admin' style='color:blue''>Click_Here!</a>
+</div>
+		`)
 	} catch(error) {
 		res.send(`<h1 style="color:Red;">Không kích hoạt được User, lỗi: ${error}</h1>`)
 	}
-})
-
-router.get('/resetpassword', async (req, res) =>{	
-	try {
-        let {email=''}=req.query	
-        let foundUser = await User.findOne({email}).exec()
-        if(!foundUser) {
-            throw "User không tồn tại"
-        }
-        await sendEmailresetPassword(email,foundUser.password)
-		res.json({
-            result: 'ok',
-            message: `Đã gửi mail lấy lại mật khẩu! Vui lòng kiểm tra email ${email}`
-        })
-	} catch(error) {
-		res.json({
-            result: 'failed',
-            message: `Lấy lại mật khẩu thất bại. Error ${error}`
-        })	} 
 })
 router.post('/login', async (req, res) =>{	
 	let {email, password} = req.body
@@ -93,15 +93,15 @@ router.get('/jwtTest', async (req, res) => {
         })
 	}
 })
-router.post('/blockuser', async (req, res) => {		
+router.put('/blockuser', async (req, res) => {		
 	let tokenKey = req.headers['x-access-token']
-	let {userIds} = req.body
-	userIds = userIds.split(',')//Biến tring thành array
+	let {email} = req.body
 	try {		
-		await blockUser(userIds, tokenKey)		
+		const data = await blockUser(email, tokenKey)		
 		res.json({
 			result: 'ok',
-			message: 'Block user thành công',	  		
+			message: 'Block user thành công',
+			data	  		
 	  	})	
 	} catch(error) {
 		res.json({
@@ -110,5 +110,52 @@ router.post('/blockuser', async (req, res) => {
         })
 	}
 
+})
+router.post('/reqresetpasswd',async(req,res)=>{
+	let {email}=req.body
+	try {
+		await reqresetPassword(email)
+		res.json({
+			result: 'ok',
+			message: 'Gửi yêu cầu thành công',
+	  	})	
+	} catch (error) {
+		res.json({
+            result: 'failed',
+            message: `Gửi yêu cầu thất bại! ${error}`
+        })	}
+})
+
+router.put('/resetpasswd',async(req,res)=>{
+	let {email,password,oldpass}=req.body
+	try {
+		let data= await resetPassword(email,password,oldpass)
+		res.json({
+			result: 'ok',
+			message: 'Đổi mật khẩu thành công!',
+			data
+	  	})	
+	} catch (error) {
+		res.json({
+            result: 'failed',
+            message: `Đổi mật khẩu thất bại! ${error}`
+        })	}
+})
+
+router.put('/changepasswd',async(req,res)=>{
+	let {password,newpassword}=req.body
+	let tokenKey = req.headers['x-access-token']
+	try {
+		let data= await changePassword(password,newpassword,tokenKey)
+		res.json({
+			result: 'ok',
+			message: 'Đổi mật khẩu thành công!',
+			data
+	  	})	
+	} catch (error) {
+		res.json({
+            result: 'failed',
+            message: `Đổi mật khẩu thất bại! ${error}`
+        })	}
 })
 module.exports=router

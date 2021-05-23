@@ -5,17 +5,15 @@ const NewsSchema = new Schema({
     title: {type: String, default: '', unique: true},
     content: {type: String, default: ''},
     date: {type: Date, default: Date.now},
-    //Trường tham chiếu, 1 blogpost do 1 người viết
+    active:{type: Number,default:1},
     author:{type: mongoose.Schema.Types.ObjectId, ref: "users"},
 
 })
-//Quan hệ 1 User - n BlogPost
 const News = mongoose.model('news', NewsSchema)
-//Một user thêm mới bài viết:
-// User phải đăng nhập(hoặc có token Key) 
+
 const insertNews = async (title, content, tokenKey) => {
+    // eslint-disable-next-line no-useless-catch
     try {
-        //Kiểm tra đăng nhập = có tokenKey "còn hạn" ko
         let signedInUser = await verifyJWT(tokenKey)
         let news1 = await News.create({
             title, content,
@@ -30,9 +28,9 @@ const insertNews = async (title, content, tokenKey) => {
         throw error
     }
 }
-//Muốn xem danh sách các blogpost => ko cần token !
-//Vì ai cũng có thể xem được
+
 const queryNews = async (text) => {
+    // eslint-disable-next-line no-useless-catch
     try {        
         let news = await News.find({
             $or: [
@@ -60,6 +58,7 @@ const queryNewsByDateRange = async (from, to) => {
     let toDate = new Date(parseInt(to.split('-')[2]), 
                             parseInt(to.split('-')[1])-1, 
                             parseInt(to.split('-')[0]))            
+    // eslint-disable-next-line no-useless-catch
     try {                
         let news = await News.find({
             date: {$gte: fromDate, $lte: toDate}, 
@@ -72,9 +71,10 @@ const queryNewsByDateRange = async (from, to) => {
 }
 //Lấy nội dung chi tiết 1 BlogPost => ko cần token 
 const getDetailNews = async (newsid) => {
+    // eslint-disable-next-line no-useless-catch
     try {        
         let news = await News.findById(newsid)
-        if (!blogPost) {
+        if (!news) {
             throw `Không tìm thấy blogpost với Id=${newsid}`
         }
         return news
@@ -85,6 +85,7 @@ const getDetailNews = async (newsid) => {
 //Cập nhật 1 blogpost => yêu cầu token
 //Chỉ có tác giả mới cập nhật được BlogPost của mình
 const updateNews = async (newsid,updatedNews,tokenKey) => {
+    // eslint-disable-next-line no-useless-catch
     try {        
         let signedInUser = await verifyJWT(tokenKey)
         let news = await News.findById(newsid)
@@ -110,6 +111,7 @@ const updateNews = async (newsid,updatedNews,tokenKey) => {
 //2. Cập nhật trường tham chiếu "blogPosts" trong bảng Users
 //=> mảng blogPosts bớt đi 1 phần tử
 const deleteNews = async (newsId, tokenKey) => {
+    // eslint-disable-next-line no-useless-catch
     try {        
         let signedInUser = await verifyJWT(tokenKey)
         let news = await News.findById(newsId)
@@ -117,7 +119,7 @@ const deleteNews = async (newsId, tokenKey) => {
             throw `Không tìm thấy blogpost với Id=${newsId}`
         }
         if (signedInUser.id !== news.author.toString()) {
-            throw "Ko xoá được vì bạn ko phải là tác giả bài viết"
+            throw "Không xoá được vì bạn ko phải là tác giả bài viết"
         }
         await News.deleteOne({_id: newsId})
         signedInUser.news = await signedInUser.news

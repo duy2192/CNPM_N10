@@ -9,7 +9,10 @@ import VueSession from 'vue-session'
 Vue.use(VeeValidate)
 Vue.config.productionTip = false
 Vue.use(VueRouter)
-Vue.use(VueSession)
+Vue.use(VueSession,{
+  persist: true
+}
+)
 import router from '@/routes/router'
 
 new Vue({

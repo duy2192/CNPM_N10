@@ -1,3 +1,4 @@
+/* eslint-disable no-mixed-spaces-and-tabs */
 const express = require('express')
 const router = express.Router()
 const { 	
@@ -14,19 +15,18 @@ router.use((req, res, next) => {
 })
 router.post('/insertNews', async (req, res) =>{
     let {title, content} = req.body
-    //Client phải gửi tokenKey
     let tokenKey = req.headers['x-access-token']
     try {
         let news1 = await insertNews(title, content, tokenKey)
         res.json({
             result: 'ok',
-            message: 'Thêm mới BlogPost thành công',
+            message: 'Thêm mới News thành công',
             data: news1
         })
 	} catch(error) {
 		res.json({
             result: 'failed',
-            message: `Không thể thêm mới BlogPost.Lỗi : ${error}`
+            message: `Không thể thêm mới News.Lỗi : ${error}`
         })
 	}
 })
@@ -34,16 +34,16 @@ router.post('/insertNews', async (req, res) =>{
 router.get('/queryNews', async (req, res) =>{	
 	let {text} = req.query
     try {    	
-        let blogPosts = await queryNews(text)
+        let news1 = await queryNews(text)
         res.json({
             result: 'ok',
-            message: 'Query thành công danh sách BlogPost',
-            data: blogPosts
+            message: 'Query thành công danh sách News',
+            data: news1
         })
 	} catch(error) {
 		res.json({
             result: 'failed',
-            message: `Không thể lấy được danh sách blogPosts.Lỗi : ${error}`
+            message: `Không thể lấy được danh sách News.Lỗi : ${error}`
         })
 	}
 })
@@ -51,32 +51,32 @@ router.get('/queryNews', async (req, res) =>{
 router.get('/queryNewsByDateRange', async (req, res) =>{	
 	let {from, to} = req.query	
     try {    	
-        let blogPosts = await queryNewsByDateRange(from, to)
+        let data = await queryNewsByDateRange(from, to)
 	  	res.json({
 	  		result: 'ok',
-	  		message: 'Query thành công danh sách BlogPost',
-	  		data: blogPosts
+	  		message: 'Query thành công danh sách News',
+	  		data
 	  	})	
 	} catch(error) {
 		res.json({
             result: 'failed',
-            message: `Không thể lấy được danh sách blogPosts.Lỗi : ${error}`
+            message: `Không thể lấy được danh sách News.Lỗi : ${error}`
         })
 	}
 })
 router.get('/getDetailNews', async (req, res) =>{		
 	let {id} = req.query	
     try {    	    
-        let blogPost = await getDetailNews(id)
+        let data = await getDetailNews(id)
 	  	res.json({
 	  		result: 'ok',
-	  		message: 'Query thành công chi tiết BlogPost',
-	  		data: blogPost
+	  		message: 'Query thành công chi tiết News',
+	  		data
 	  	})		
 	} catch(error) {
 		res.json({
             result: 'failed',
-            message: `Ko lấy được thông tin chi tiết BlogPost. Error: ${error}`
+            message: `Ko lấy được thông tin chi tiết News. Error: ${error}`
         })
 	}
 })
@@ -86,16 +86,16 @@ router.put('/updateNews', async (req, res) =>{
     let updatedBlogPost = req.body
     let tokenKey = req.headers['x-access-token']
     try {    	
-    	let blogPost = await updateNews(id, updatedBlogPost,tokenKey)
+    	let data = await updateNews(id, updatedBlogPost,tokenKey)
         res.json({
             result: 'ok',
-            message: 'Update thành công 1 BlogPost',
-            data: blogPost
+            message: 'Update thành công 1 News',
+            data
         })	
     } catch(error) {
 		res.json({
             result: 'failed',
-            message: `Ko update được BlogPost. Error: ${error}`
+            message: `Ko update được News. Error: ${error}`
         })
 	}
 })
@@ -106,12 +106,12 @@ router.delete('/deleteNews', async (req, res) =>{
         await deleteNews(id, tokenKey)
         res.json({
             result: 'ok',
-            message: 'Xoá thành công 1 BlogPost',	  		
+            message: 'Xoá thành công 1 News',	  		
         })	
 	} catch(error) {
 		res.json({
             result: 'failed',
-            message: `Ko xoá được BlogPost. Error: ${error}`
+            message: `Ko xoá được News. Error: ${error}`
         })
 	}
 })

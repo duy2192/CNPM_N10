@@ -73,9 +73,9 @@
   </div>
 </template>
 <script>
-import Header from "@/components/Header";
-import {getDataCovid19} from '../APIs/dataAPI'
-import {getDataCovid19VN} from '../APIs/dataAPI'
+import Header from "@/components/Main/Header";
+import {getDataCovid19} from '@/APIs/dataAPI'
+import {getDataCovid19VN} from '@/APIs/dataAPI'
 export default {
   components: { Header },
   name: "Home",
@@ -85,7 +85,7 @@ export default {
       data2: []
     };
   },
-  async created() {
+  async beforeCreate() {
    let data1= await getDataCovid19()
     this.data1=data1
    let data2= await getDataCovid19VN()

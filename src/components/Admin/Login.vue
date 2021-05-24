@@ -1,8 +1,8 @@
 <template>
   <div class="container">
-    <div class="row mt-5 border rounded border-primary bg-primary">
+    <div class="row mt-5 border rounded  ">
       <div class="col-sm-9 col-md-7 col-lg-5 mx-auto ">
-        <h5 class="text-center text-dark font-weight-bold mt-5">
+        <h5 class="text-center font-weight-bold mt-5">
           {{ this.logintext }}
         </h5>
         <div class="form-group mt-5">
@@ -44,7 +44,7 @@
           {{ this.logintext }}
         </button>
         <p
-          class="btn mb-5 text-center float-right"
+          class="btn mb-5 text-center float-right text-light"
           @click="forgotclick"
           ><u>{{ this.forgot }}</u></p
         >
@@ -116,5 +116,10 @@ export default {
 </script>
 <!-- scoped: Chỉ có tác dụng trong file .vue này -->
 <style scoped>
-
+.container{
+  background-color: #34495e;
+}
+h5{
+ color:#16a085
+}
 </style>

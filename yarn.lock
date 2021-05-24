@@ -2410,6 +2410,20 @@ cipher-base@^1.0.0, cipher-base@^1.0.1, cipher-base@^1.0.3:
     inherits "^2.0.1"
     safe-buffer "^5.0.1"
 
+ckeditor4-integrations-common@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/ckeditor4-integrations-common/-/ckeditor4-integrations-common-0.2.0.tgz#994a83f94e14161fa8ee15e7f0edc8735b12d8f8"
+  integrity sha512-KkHztF0bkGOnTcifWFd55j5Y9SCR3uk12SGgS6L1mZNnBeIJFCcgTwZWEHtG2aDJF7aZob7cex1CShL+SrNuow==
+  dependencies:
+    load-script "^1.0.0"
+
+ckeditor4-vue@^1.3.1:
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/ckeditor4-vue/-/ckeditor4-vue-1.3.1.tgz#6deeec83de607b3cbfdf5cc2ee49923bc4840809"
+  integrity sha512-F5abagv2OXKbLuZjIea6BhxEoe54FtWDNRGZFnKNm9YcY24/W9VRedWuUCFwWVHFB+Gm4F5hcfF3aqoK7hPy8A==
+  dependencies:
+    ckeditor4-integrations-common "^0.2.0"
+
 class-utils@^0.3.5:
   version "0.3.6"
   resolved "https://registry.yarnpkg.com/class-utils/-/class-utils-0.3.6.tgz#f93369ae8b9a7ce02fd41faad0ca83033190c463"
@@ -5122,6 +5136,11 @@ lines-and-columns@^1.1.6:
   version "1.1.6"
   resolved "https://registry.yarnpkg.com/lines-and-columns/-/lines-and-columns-1.1.6.tgz#1c00c743b433cd0a4e80758f7b64a57440d9ff00"
   integrity sha1-HADHQ7QzzQpOgHWPe2SldEDZ/wA=
+
+load-script@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/load-script/-/load-script-1.0.0.tgz#0491939e0bee5643ee494a7e3da3d2bac70c6ca4"
+  integrity sha1-BJGTngvuVkPuSUp+PaPSuscMbKQ=
 
 loader-fs-cache@^1.0.0:
   version "1.0.3"

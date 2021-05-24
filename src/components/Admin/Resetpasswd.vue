@@ -1,8 +1,8 @@
 <template>
   <div class="container">
-    <div class="row mt-5 border rounded border-primary bg-primary">
+    <div class="row mt-5 border rounded ">
       <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
-        <h3 class="text-center text-dark font-weight-bold mt-5">
+        <h3 class="text-center font-weight-bold mt-5">
           Đổi mật khẩu
         </h3>
         <div class="form-group mt-5">
@@ -118,4 +118,10 @@ export default {
 };
 </script>
 <style scoped>
+.container{
+  background-color: #34495e;
+}
+h3{
+ color:#16a085
+}
 </style>

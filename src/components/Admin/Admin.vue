@@ -4,10 +4,10 @@
       <ul class="nav">
         <li class="nav_items" @click="avatarcl">
           <img
-            src="../../assets/avatar.png"
+            src="../../assets/avatar.jpg"
             alt=""
-            class="ml-5 mb-5"
-            style="width: 100px; height: 100px"
+            class="ml-5 mb-5 rounded-circle"
+            style="width: 100px; height: 100px; background-size: cover;"
           />
           <p class="txtli text-info">{{ this.username }}</p>
         </li>
@@ -99,7 +99,7 @@ export default {
   },
 };
 </script>
-<style scoped>
+<style  scoped>
 .nav__cont {
   position: fixed;
   width: 40px;
@@ -171,4 +171,5 @@ main {
   transition: all 0.5s ease;
   z-index: -10;
 }
+
 </style>

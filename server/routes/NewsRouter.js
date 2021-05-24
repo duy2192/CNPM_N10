@@ -7,7 +7,8 @@ const {
     queryNewsByDateRange,
     getDetailNews,
     updateNews,
-    deleteNews
+    deleteNews,
+    getNews
 } = require('../models/models/News')
 router.use((req, res, next) => {
     console.log('Time: ', Date.now()) //Time log
@@ -27,6 +28,22 @@ router.post('/insertNews', async (req, res) =>{
 		res.json({
             result: 'failed',
             message: `Không thể thêm mới News.Lỗi : ${error}`
+        })
+	}
+})
+
+router.get('/getallNews', async (req, res) =>{	
+    try {    	
+        let news1 = await getNews()
+        res.json({
+            result: 'ok',
+            message: 'Query thành công danh sách News',
+            data: news1
+        })
+	} catch(error) {
+		res.json({
+            result: 'failed',
+            message: `Không thể lấy được danh sách News.Lỗi : ${error}`
         })
 	}
 })

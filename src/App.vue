@@ -31,4 +31,7 @@ export default {
   font-family: "Open Sans", sans-serif;
   box-sizing: border-box;
 }
+body{
+   background-color: #ecf0f1;
+}
 </style>

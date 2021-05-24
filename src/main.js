@@ -6,6 +6,8 @@ import App from './App.vue'
 import VueRouter from 'vue-router'
 import VeeValidate from 'vee-validate'
 import VueSession from 'vue-session'
+import CKEditor from 'ckeditor4-vue'
+Vue.use(CKEditor)
 Vue.use(VeeValidate)
 Vue.config.productionTip = false
 Vue.use(VueRouter)

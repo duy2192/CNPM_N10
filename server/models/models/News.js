@@ -4,11 +4,13 @@ const {verifyJWT} = require('./User')
 const NewsSchema = new Schema({
     title: {type: String, default: '', unique: true},
     content: {type: String, default: ''},
+    image:{type:String},
     date: {type: Date, default: Date.now},
     active:{type: Number,default:1},
     author:{type: mongoose.Schema.Types.ObjectId, ref: "users"},
 
 })
+
 const News = mongoose.model('news', NewsSchema)
 
 const insertNews = async (title, content, tokenKey) => {
@@ -24,6 +26,16 @@ const insertNews = async (title, content, tokenKey) => {
         await signedInUser.news.push(news1)
         await signedInUser.save()
         return news1
+    } catch(error) {        
+        throw error
+    }
+}
+
+const getNews = async () => {
+    // eslint-disable-next-line no-useless-catch
+    try {
+        let news =  await News.find({active:1})
+        return news
     } catch(error) {        
         throw error
     }
@@ -75,7 +87,7 @@ const getDetailNews = async (newsid) => {
     try {        
         let news = await News.findById(newsid)
         if (!news) {
-            throw `Không tìm thấy blogpost với Id=${newsid}`
+            throw `Không tìm thấy News với Id=${newsid}`
         }
         return news
     } catch(error) {        
@@ -139,5 +151,6 @@ module.exports = {
     queryNewsByDateRange,
     getDetailNews,
     updateNews,
-    deleteNews
+    deleteNews,
+    getNews
 }

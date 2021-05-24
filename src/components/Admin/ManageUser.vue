@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h1 class="text-primary text-center mt-5 font-weight-bold">
+    <h1 class=" text-center mt-5 font-weight-bold" style=" color:#16a085">
       Quản lý tài khoản
     </h1>
     <div class="mt-5">
@@ -137,4 +137,5 @@ export default {
 .form-group {
   width: 400px;
 }
+
 </style>

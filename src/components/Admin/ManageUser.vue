@@ -52,6 +52,7 @@
       >
         <thead class="thead-inverse">
           <tr>
+            <th>STT</th>
             <th>Tên</th>
             <th>Email</th>
             <th>Số bài viết</th>
@@ -60,8 +61,9 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="user in this.alluser" v-bind:key="user.email">
-            <td scope="row">{{ user.username }}</td>
+          <tr v-for="(user,key) in this.alluser" v-bind:key="user.email">
+            <td scope="row">{{ key+1 }}</td>
+            <td>{{ user.username }}</td>
             <td>{{ user.email }}</td>
             <td>{{ user.news.length }}</td>
             <td>{{ user.active == 2 ? "Admin" : "User" }}</td>

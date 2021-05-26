@@ -7,7 +7,7 @@
             src="../../assets/avatar.jpg"
             alt=""
             class="ml-5 mb-5 rounded-circle"
-            style="width: 100px; height: 100px; background-size: cover;"
+            style="width: 100px; height: 100px; background-size: cover"
           />
           <p class="txtli text-info">{{ this.username }}</p>
         </li>
@@ -25,18 +25,35 @@
             <u> Đăng xuất</u>
           </p>
         </li>
-        <li class="nav__items mt-3" v-if="this.role == 2" @click='manageUsercl'>
+        <li class="nav__items mt-3" v-if="this.role == 2" @click="manageUsercl">
           <p class="txtli font-weight-bold">Quản lý tài khoản</p>
         </li>
-        <li class="nav__items"  v-if="this.role == 2"  @click='manageNewscl'>
+        <li
+          class="nav__items"
+          v-if="this.role == 2 || this.role == 1"
+          @click="manageNewscl"
+        >
           <p class="txtli font-weight-bold">Quản lý bài viết</p>
+        </li>
+        <li
+          class="nav__items"
+          v-if="this.role == 2 "
+          @click="adminNewscl"
+        >
+          <p class="txtli font-weight-bold">Viết bài</p>
         </li>
       </ul>
     </nav>
     <div class="wrapper">
       <main>
-        <managenews  v-if="this.role == 2&&this.task=='1'" />
-        <manageUser v-if="this.role == 2&&this.task=='0'" />
+        <managenews v-if="this.role == 2 && this.task == '1'" />
+        <manageUser v-if="this.role == 2 && this.task == '0'" />
+        <news
+          v-if="
+            (this.role == 1 && this.task == '1') ||
+            ( this.role == 2 && this.task == '3')
+          "
+        />
       </main>
     </div>
   </div>
@@ -44,9 +61,10 @@
 <script>
 import managenews from "./ManageNews";
 import manageUser from "./ManageUser";
+import news from "./News";
 
 export default {
-  components: { managenews, manageUser },
+  components: { managenews, manageUser, news },
   name: "Admin",
   data() {
     return {
@@ -76,11 +94,14 @@ export default {
     }
   },
   methods: {
-    manageUsercl(){
-      this.task='0'
+    manageUsercl() {
+      this.task = "0";
     },
-    manageNewscl(){
-      this.task='1'
+    manageNewscl() {
+      this.task = "1";
+    },
+    adminNewscl(){
+      this.task='3'
     },
     logout() {
       this.$session.destroy();
@@ -171,5 +192,4 @@ main {
   transition: all 0.5s ease;
   z-index: -10;
 }
-
 </style>

@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken')//Mã hoá 1 jsonObject thành token(string)
 const secretString = "secret string by da"//tự cho 1 string tuỳ ý
 
 const UserSchema = new Schema({
-    username: { type: String },
+    username: { type: String ,default:''},
     email: { type: String, match: /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/, unique: true },
     password: { type: String, required: true },
     active: { type: Number, default: 0 },

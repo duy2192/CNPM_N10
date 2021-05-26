@@ -4,28 +4,51 @@ const {verifyJWT} = require('./User')
 const NewsSchema = new Schema({
     title: {type: String, default: '', unique: true},
     content: {type: String, default: ''},
-    image:{type:String},
+    image:{type:String,default: 'bg-7.jpg'},
     date: {type: Date, default: Date.now},
     active:{type: Number,default:1},
     author:{type: mongoose.Schema.Types.ObjectId, ref: "users"},
 
 })
 
-const News = mongoose.model('news', NewsSchema)
+const Newss = mongoose.model('news', NewsSchema)
 
-const insertNews = async (title, content, tokenKey) => {
+const insertnewss = async (title, content, tokenKey) => {
     // eslint-disable-next-line no-useless-catch
     try {
         let signedInUser = await verifyJWT(tokenKey)
-        let news1 = await News.create({
-            title, content,
+        let new1 = await Newss.create({
+            title:title, 
+            content:content,
             date: Date.now(),
             author: signedInUser
         })
-        await news1.save()
-        await signedInUser.news.push(news1)
+        await new1.save()
+        await signedInUser.news.push(new1._id)
         await signedInUser.save()
-        return news1
+        return new1
+    } catch(error) {        
+        throw error
+    }
+}
+
+const updateImg = async (id,img) => {
+    // eslint-disable-next-line no-useless-catch
+    try {
+        let news1= await Newss.findById(id)
+        news1.image=await img
+        await news1.save()
+        return true
+    } catch(error) {        
+        throw error
+    }
+}
+
+const getNewsbyId = async (id) => {
+    // eslint-disable-next-line no-useless-catch
+    try {
+        let news =  await Newss.find({author:id})
+        return news
     } catch(error) {        
         throw error
     }
@@ -34,7 +57,7 @@ const insertNews = async (title, content, tokenKey) => {
 const getNews = async () => {
     // eslint-disable-next-line no-useless-catch
     try {
-        let news =  await News.find({active:1})
+        let news =  await Newss.find({active:1})
         return news
     } catch(error) {        
         throw error
@@ -44,7 +67,7 @@ const getNews = async () => {
 const queryNews = async (text) => {
     // eslint-disable-next-line no-useless-catch
     try {        
-        let news = await News.find({
+        let news = await Newss.find({
             $or: [
                 {
                     title: new RegExp(text, "i")
@@ -72,7 +95,7 @@ const queryNewsByDateRange = async (from, to) => {
                             parseInt(to.split('-')[0]))            
     // eslint-disable-next-line no-useless-catch
     try {                
-        let news = await News.find({
+        let news = await Newss.find({
             date: {$gte: fromDate, $lte: toDate}, 
             //$gte="greater than or equal", $lte="less than or equal"           
         })        
@@ -85,7 +108,7 @@ const queryNewsByDateRange = async (from, to) => {
 const getDetailNews = async (newsid) => {
     // eslint-disable-next-line no-useless-catch
     try {        
-        let news = await News.findById(newsid)
+        let news = await Newss.findById(newsid)
         if (!news) {
             throw `Không tìm thấy News với Id=${newsid}`
         }
@@ -100,9 +123,9 @@ const updateNews = async (newsid,updatedNews,tokenKey) => {
     // eslint-disable-next-line no-useless-catch
     try {        
         let signedInUser = await verifyJWT(tokenKey)
-        let news = await News.findById(newsid)
+        let news = await Newss.findById(newsid)
         if (!news) {
-            throw `Không tìm thấy blogpost với Id=${newsid}`
+            throw `Không tìm thấy news với Id=${newsid}`
         }
         if (signedInUser.id !== news.author.toString()) {
             throw "Ko update được vì bạn ko phải là tác giả bài viết"
@@ -126,31 +149,47 @@ const deleteNews = async (newsId, tokenKey) => {
     // eslint-disable-next-line no-useless-catch
     try {        
         let signedInUser = await verifyJWT(tokenKey)
-        let news = await News.findById(newsId)
+        let news = await Newss.findById(newsId)
         if (!news) {
-            throw `Không tìm thấy blogpost với Id=${newsId}`
+            throw `Không tìm thấy news với Id=${newsId}`
         }
         if (signedInUser.id !== news.author.toString()) {
             throw "Không xoá được vì bạn ko phải là tác giả bài viết"
         }
-        await News.deleteOne({_id: newsId})
+        await Newss.deleteOne({_id: newsId})
         signedInUser.news = await signedInUser.news
-                                 .filter(eachBlogPost => {
-            return newsId._id.toString() !== eachBlogPost._id.toString()
+                                 .filter(eachNews => {
+            return news._id.toString() !== eachNews._id.toString()
         })
         await signedInUser.save()
     } catch(error) {        
         throw error
     }
 }
-
+const verifyFileExtensions = async (files) => {
+    const keys = await Object.keys(files)
+    for(let i = 0; i < keys.length; i++) {
+        const key = keys[i]
+        const fileObject = files[key]
+        const fileExtension = fileObject.name.split('.').pop()
+        let fileExceed = fileObject.truncated === true 
+        if (["png", "jpg", "jpeg"].indexOf(fileExtension.toLowerCase()) < 0 
+                || fileExceed) {
+            return false
+        }            
+    }
+    return true
+}
 module.exports = {
-    News,
-    insertNews,
+    Newss,
+    insertnewss,
     queryNews,
     queryNewsByDateRange,
     getDetailNews,
     updateNews,
     deleteNews,
-    getNews
+    getNews,
+    verifyFileExtensions,
+    updateImg,
+    getNewsbyId
 }

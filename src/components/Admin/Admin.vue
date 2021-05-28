@@ -50,7 +50,7 @@
         <manageUser v-if="this.role == 2 && this.task == '0'" />
         <news
           v-if="
-            (this.role == 1 && this.task == '1') ||
+            (this.role == 1 && (this.task == '1' ||this.task=='0')) ||
             ( this.role == 2 && this.task == '3')
           "
         />

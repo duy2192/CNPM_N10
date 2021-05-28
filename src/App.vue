@@ -1,5 +1,5 @@
 <template>
-  <div id="container">
+  <div id="app">
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
@@ -32,6 +32,9 @@ export default {
   box-sizing: border-box;
 }
 body{
-   background-color: #ecf0f1;
+   background-color: #fff;
+}
+.delay{
+  animation-delay: 3s;
 }
 </style>

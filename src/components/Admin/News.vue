@@ -61,9 +61,21 @@
     <button class="btn btn-danger mt-3" @click="addnews">
       {{ this.actionnews == "0" ? "Thêm bài viết" : "Hủy" }}
     </button>
-        <h2 class="text-center font-weight-bold" v-if="this.news.length<=0" style="color:#b71540">Oops! Bạn chưa có bài viết nào!</h2><br>
+        <h2 class="text-center font-weight-bold" v-if="this.news.length<=0&&this.search.trim()==''" style="color:#b71540">Oops! Bạn chưa có bài viết nào!</h2><br>
 
-    <div class="mt-5" v-if="this.actionnews == '0'">
+    <div class="mt-5" v-if="this.actionnews=='0'">
+      <input
+        type="text"
+        class="border rounded mb-2"
+        @keyup="searchnews"
+        v-model="search"
+        style="width: 400px"
+        placeholder="Tìm kiếm"
+      />
+      <p class="font-weight-bold" v-if="this.news.length<=0&&this.search.trim()!=''">Không tìm thấy kết quả phù hợp</p>
+      </div>
+
+    <div class="mt-3" v-if="this.actionnews == '0'">
       <table
         class="table text-center table-bordered bg-info"
         v-if="this.news.length > 0"
@@ -85,7 +97,7 @@
           >
             <td>{{ index + 1 }}</td>
             <td scope="row">{{ news.title }}</td>
-            <td>{{ news.date }}</td>
+            <td>{{ news.date.slice(0, 10) }}</td>
             <td>{{ news.active == "1" ? "Ok" : "Blocked" }}</td>
             <td>
               <i class="fas fa-edit" @click="editnews(news._id)"></i
@@ -97,6 +109,13 @@
           </tr>
         </tbody>
       </table>
+
+       <p class="text-center mt-5 font-weight-bold" style="text-dark" v-if="this.page>0"><u> {{`Trang ${this.page+1}`}}</u></p>
+    <div class="" style="margin-left: 45%">
+      <p class="btn previous font-weight-bold" @click="prevpage" v-if="this.page>0">&laquo; Trước</p>
+      <p class="btn next ml-1 font-weight-bold" @click="nextpage" v-if="(this.news<6&&this.page<this.total)||(this.news.length==6&&(this.total-this.page)>1)">Tiếp theo &raquo;</p>
+    </div>
+
     </div>
   </div>
 </template>
@@ -124,12 +143,17 @@ export default {
       userloggedin: null,
       resimg: "",
       idnews: "",
+      search:"",
+      page:0,
+      total:0
     };
   },
   async beforeCreate() {
     this.userloggedin = await this.$session.get("loggedInUser");
-    let usernews = await getNewsbyID(this.userloggedin._id);
-    this.news = usernews;
+    let usernews = await getNewsbyID(this.userloggedin._id,"",0);
+    this.news = usernews.data;
+    this.total=usernews.total
+    console.log(this.total)
   },
   methods: {
     addnews() {
@@ -158,10 +182,11 @@ export default {
           var newsres = res;
           this.actionnews = "0";
 
-          let newsresponse = await getNewsbyID(this.userloggedin._id);
-          this.news = await newsresponse;
+          let newsresponse = await getNewsbyID(this.userloggedin._id,this.search.trim());
+          this.news = await newsresponse.data;
           this.title = "";
           this.editorData = "";
+          this.total=newsresponse.total
         } else {
           alert(res.message);
         }
@@ -182,13 +207,18 @@ export default {
       }
     },
     async deletenews(id) {
+      if(confirm('Are you sure?')){
       let res = await deleteNewsbyId(id, this.userloggedin.tokenKey);
       if (res.result == "ok") {
-        let newsresponse = await getNewsbyID(this.userloggedin._id);
-        this.news = await newsresponse;
+        let newsresponse = await getNewsbyID(this.userloggedin._id,this.search.trim());
+        this.news = await newsresponse.data;
+        this.total=newsresponse.total
         alert("Xóa bài viết thành công!");
       } else {
         alert(res.message);
+      }}
+      else{
+        return
       }
     },
     async editnews(id) {
@@ -213,12 +243,13 @@ export default {
           alert("Sửa bài viết thành công!");
           var newsres = res;
           this.actionnews = "0";
-          let newsresponse = await getNewsbyID(this.userloggedin._id);
-          this.news = await newsresponse;
+          let newsresponse = await getNewsbyID(this.userloggedin._id, this.search.trim());
+          this.news = await newsresponse.data;
           this.title = "";
           this.editorData = "";
+          this.total=newsresponse.total
         } else {
-          alert(res.result);
+          alert(res.message);
         }
       }
       if (newsres != undefined) {
@@ -230,14 +261,53 @@ export default {
             var data = new FormData();
             data.append("fileimg", this.selectedfile);
             data.append("id", newsres.data._id);
-            let res = await uploadimg(data);
-            console.log(res);
+            await uploadimg(data);
           }
         }
       }
     },
+    async searchnews(){
+      let news = await getNewsbyID(this.userloggedin._id ,this.search.trim(),this.page)
+      this.news=news.data  
+      },
+    async nextpage() {
+     if(this.page==this.total){
+       return
+     }
+      this.page++
+      let news = await  getNewsbyID(this.userloggedin._id ,this.search.trim(),this.page)
+      if(news.result=='ok'){
+      this.news = news.data;
+      this.total=news.total
+      }
+
+    },
+       async prevpage() {
+         if(this.page==0){
+           return
+         }
+      this.page--
+      let news = await await getNewsbyID(this.userloggedin._id ,this.search.trim(),this.page)
+      this.news = news.data;
+      this.total=news.total
+    }
   },
 };
 </script>
 <style scoped>
+a:hover {
+  background-color: #74b9ff;
+  color: #f5f6fa
+}
+.previous {
+  background-color: #0984e3;
+  color: black;
+  border-radius: 10%;
+}
+
+.next {
+  background-color: #0984e3;
+  color: black;
+  border-radius: 10%;
+}
 </style>

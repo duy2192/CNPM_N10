@@ -10,11 +10,12 @@ const {
     getDetailNews,
     updateNews,
     deleteNews,
-    getNews,
     verifyFileExtensions,
     updateImg,
-    getNewsbyId
-} = require('../models/models/News')
+    getNewsbyId,
+    blockNews,
+    unblockNews
+} = require('../models/models/Posts')
 router.use((req, res, next) => {
     console.log('Time: ', Date.now()) //Time log
     next()
@@ -29,14 +30,14 @@ router.post('/insertNews1', async (req, res) => {
         let data = await insertnewss(title, content, tokenKey)
         res.json({
             result: 'ok',
-            message: 'Thêm mới News thành công',
+            message: 'Thêm mới bài viết thành công',
             data
         })
     } catch (error) {
         console.log(error)
         res.json({
             result: 'failed',
-            message: `Không thể thêm mới News.Lỗi : ${error}`
+            message: `Không thể thêm mới bài viết.Lỗi : ${error}`
         })
     }
 })
@@ -94,50 +95,37 @@ router.put('/uploadimg', async (req, res) => {
 
 router.get('/getNewsbyId', async (req, res) => {
     try {
-        let {id}=req.query
-        let news1 = await getNewsbyId(id)
+        let {id,text,page}=req.query
+        let news1 = await getNewsbyId(id,text,page)
         res.json({
             result: 'ok',
-            message: 'Query thành công danh sách News',
-            data: news1
+            message: 'Query thành công danh sách bài viết',
+            total: news1.total,
+            data: news1.news
         })
     } catch (error) {
         res.json({
             result: 'failed',
-            message: `Không thể lấy được danh sách News.Lỗi : ${error}`
-        })
-    }
-})
-
-router.get('/getallNews', async (req, res) => {
-    try {
-        let news1 = await getNews()
-        res.json({
-            result: 'ok',
-            message: 'Query thành công danh sách News',
-            data: news1
-        })
-    } catch (error) {
-        res.json({
-            result: 'failed',
-            message: `Không thể lấy được danh sách News.Lỗi : ${error}`
+            message: `Không thể lấy được danh sách bài viết.Lỗi : ${error}`
         })
     }
 })
 
 router.get('/queryNews', async (req, res) => {
-    let { text } = req.query
+    let { text,page } = req.query
     try {
-        let news1 = await queryNews(text)
+        let news1 = await queryNews(text,page)
         res.json({
             result: 'ok',
-            message: 'Query thành công danh sách News',
-            data: news1
+            message: 'Query thành công danh sách bài viết',
+            total:news1.total,
+            data: news1.news,
+            data1:news1.news1
         })
     } catch (error) {
         res.json({
             result: 'failed',
-            message: `Không thể lấy được danh sách News.Lỗi : ${error}`
+            message: `Không thể lấy được danh sách bài viết.Lỗi : ${error}`
         })
     }
 })
@@ -148,13 +136,13 @@ router.get('/queryNewsByDateRange', async (req, res) => {
         let data = await queryNewsByDateRange(from, to)
         res.json({
             result: 'ok',
-            message: 'Query thành công danh sách News',
+            message: 'Query thành công danh sách bài viết',
             data
         })
     } catch (error) {
         res.json({
             result: 'failed',
-            message: `Không thể lấy được danh sách News.Lỗi : ${error}`
+            message: `Không thể lấy được danh sách bài viết.Lỗi : ${error}`
         })
     }
 })
@@ -164,13 +152,13 @@ router.get('/getDetailNews', async (req, res) => {
         let data = await getDetailNews(id)
         res.json({
             result: 'ok',
-            message: 'Query thành công chi tiết News',
+            message: 'Query thành công chi tiết bài viết',
             data
         })
     } catch (error) {
         res.json({
             result: 'failed',
-            message: `Ko lấy được thông tin chi tiết News. Error: ${error}`
+            message: `Ko lấy được thông tin chi tiết bài viết. Error: ${error}`
         })
     }
 })
@@ -183,16 +171,53 @@ router.put('/updateNews', async (req, res) => {
         let data = await updateNews(id, updatedBlogPost, tokenKey)
         res.json({
             result: 'ok',
-            message: 'Update thành công 1 News',
+            message: 'Update thành công bài viết',
             data
         })
     } catch (error) {
         res.json({
             result: 'failed',
-            message: `Ko update được News. Error: ${error}`
+            message: `Ko update được bài viết. Error: ${error}`
         })
     }
 })
+
+router.put('/blocknews', async (req, res) => {
+    let { id } = req.body
+    let tokenKey = req.headers['x-access-token']
+    try {
+        let data = await blockNews(id, tokenKey)
+        res.json({
+            result: 'ok',
+            message: 'Chặn thành công bài viết!',
+            data
+        })
+    } catch (error) {
+        res.json({
+            result: 'failed',
+            message: `Không chặn được bài viết. Error: ${error}`
+        })
+    }
+})
+
+router.put('/unblocknews', async (req, res) => {
+    let { id } = req.body
+    let tokenKey = req.headers['x-access-token']
+    try {
+        let data = await unblockNews(id, tokenKey)
+        res.json({
+            result: 'ok',
+            message: 'Mở khóa thành công bài viết!',
+            data
+        })
+    } catch (error) {
+        res.json({
+            result: 'failed',
+            message: `Không mở khóa được bài viết. Error: ${error}`
+        })
+    }
+})
+
 router.delete('/deleteNews', async (req, res) => {
     let { id } = req.body
     let tokenKey = req.headers['x-access-token']
@@ -200,12 +225,12 @@ router.delete('/deleteNews', async (req, res) => {
         await deleteNews(id, tokenKey)
         res.json({
             result: 'ok',
-            message: 'Xoá thành công 1 News',
+            message: 'Xoá thành công 1 bài viết',
         })
     } catch (error) {
         res.json({
             result: 'failed',
-            message: `Ko xoá được News. Error: ${error}`
+            message: `Ko xoá được bài viết. Error: ${error}`
         })
     }
 })

@@ -2,7 +2,7 @@ import Home from '@/components/Main/Home'
 import Login from '@/components/Admin/Login'
 import Admin from '@/components/Admin/Admin'
 import resetpasswd from '@/components/Admin/Resetpasswd'
-import newsPage from '@/components/Main/News'
+import newsPage from '@/components/Main/NewsPage'
 import VueRouter from 'vue-router'
 const routes=[
     {path:'/', component: Home},

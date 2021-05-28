@@ -10,6 +10,7 @@ const API_BLOCKUSER = `${SERVER_NAME}:${SERVER_PORT}/users/blockuser`;
 const API_REQRESETPASSWD = `${SERVER_NAME}:${SERVER_PORT}/users/reqresetpasswd`;
 const API_RESETPASSWD = `${SERVER_NAME}:${SERVER_PORT}/users/resetpasswd`;
 const API_CHANGEPASSWD = `${SERVER_NAME}:${SERVER_PORT}/users/changepasswd`;
+const API_UNBLOCKUSER = `${SERVER_NAME}:${SERVER_PORT}/users/unblockuser`;
 
 export const registerUser = async (name, email) => {
     try {
@@ -77,7 +78,28 @@ export const blockUser = async (email,token) => {
         return responseJson
 
     } catch (error) {
-        return {result: error}
+        return {result: error,
+                message:error}
+    }
+}
+
+export const unblockUser = async (email,token) => {
+    try {
+        let response = await fetch(API_UNBLOCKUSER, {
+            method: 'PUT',
+            body: `email=${email}`,
+            headers: {
+                "Content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+                "x-access-token":token
+            },
+        })
+        let responseJson = await response.json()
+        return responseJson
+
+    } catch (error) {
+        return {result: error,
+                message:error
+        }
     }
 }
 

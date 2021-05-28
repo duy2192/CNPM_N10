@@ -11,7 +11,7 @@ const UserSchema = new Schema({
     email: { type: String, match: /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/, unique: true },
     password: { type: String, required: true },
     active: { type: Number, default: 0 },
-    news: [{ type: mongoose.Schema.Types.ObjectId, ref: 'news' }]
+    news: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Posts' }]
 
 })
 
@@ -48,8 +48,15 @@ const getUser = async () => {
                 },
                 {
                     active: 2
+                },
+                {
+                    active:-1
                 }
             ],
+        },{},{
+            sort:{
+                active:-1
+            }
         }).exec()
         return Users
     } catch (error) {
@@ -143,6 +150,7 @@ const activeUser = async (email, secretKey) => {
         throw error
     }
 }
+
 const loginUser = async (email, password) => {
     // eslint-disable-next-line no-useless-catch
     try {
@@ -176,6 +184,7 @@ const loginUser = async (email, password) => {
         throw error
     }
 }
+
 const verifyJWT = async (tokenKey) => {
     // eslint-disable-next-line no-useless-catch
     try {
@@ -192,6 +201,7 @@ const verifyJWT = async (tokenKey) => {
         throw error
     }
 }
+
 const blockUser = async (email, tokenKey) => {
     // eslint-disable-next-line no-useless-catch
     try {
@@ -199,6 +209,24 @@ const blockUser = async (email, tokenKey) => {
         let user = await User.findOne({ email }).exec()
         if (signedInUser.active == 2 && user.active != 2) {
             user.active = -1
+            await user.save()
+            return user
+        }
+        else {
+            throw 'Bạn không đủ quyền để thực hiện hành động này!'
+        }
+    } catch (error) {
+        throw error
+    }
+}
+
+const unblockUser = async (email, tokenKey) => {
+    // eslint-disable-next-line no-useless-catch
+    try {
+        let signedInUser = await verifyJWT(tokenKey)
+        let user = await User.findOne({ email }).exec()
+        if (signedInUser.active == 2 && user.active != 2) {
+            user.active = 1
             await user.save()
             return user
         }
@@ -219,5 +247,6 @@ module.exports = {
     verifyJWT,
     blockUser,
     getUser,
-    changePassword
+    changePassword,
+    unblockUser
 }

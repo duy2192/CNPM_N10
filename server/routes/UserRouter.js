@@ -10,7 +10,8 @@ const {
     verifyJWT,
     blockUser,
 	getUser,
-	changePassword
+	changePassword,
+	unblockUser
 }=require('../models/models/User')
 
 router.use((req,res,next)=>{
@@ -33,6 +34,7 @@ router.get('/getuser', async (req, res) =>{
 		})
 	}
 })
+
 router.post('/registerUser', async (req, res) =>{
 	let {name, email} = req.body 
     try {
@@ -62,6 +64,7 @@ router.get('/activeuser', async (req, res) =>{
 		res.send(`<h1 style="color:Red;">Không kích hoạt được User, lỗi: ${error}</h1>`)
 	}
 })
+
 router.post('/login', async (req, res) =>{	
 	let {email, password} = req.body
     try {
@@ -78,6 +81,7 @@ router.post('/login', async (req, res) =>{
         })
 	}
 })
+
 router.get('/jwtTest', async (req, res) => {		
 	let tokenKey = req.headers['x-access-token']
     try {
@@ -93,6 +97,7 @@ router.get('/jwtTest', async (req, res) => {
         })
 	}
 })
+
 router.put('/blockuser', async (req, res) => {		
 	let tokenKey = req.headers['x-access-token']
 	let {email} = req.body
@@ -111,6 +116,26 @@ router.put('/blockuser', async (req, res) => {
 	}
 
 })
+
+router.put('/unblockuser', async (req, res) => {		
+	let tokenKey = req.headers['x-access-token']
+	let {email} = req.body
+	try {		
+		const data = await unblockUser(email, tokenKey)		
+		res.json({
+			result: 'ok',
+			message: 'UnBlock user thành công',
+			data	  		
+	  	})	
+	} catch(error) {
+		res.json({
+            result: 'failed',
+            message: `Lỗi UnBlock user.Error: ${error}`
+        })
+	}
+
+})
+
 router.post('/reqresetpasswd',async(req,res)=>{
 	let {email}=req.body
 	try {

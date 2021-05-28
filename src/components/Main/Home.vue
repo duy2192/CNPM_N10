@@ -83,8 +83,8 @@
 <script>
 import Header from "@/components/Main/Header";
 import Footer from "@/components/Main/Footer";
-
-import { getDataCovid19, getDataCovid19VN } from "@/APIs/dataAPI";
+import data2 from '@/assets/data2.json'
+import data1 from '@/assets/data1.json'
 export default {
   components: { Header,Footer },
   name: "Home",
@@ -95,10 +95,8 @@ export default {
     };
   },
   async beforeCreate() {
-    let data1 = await getDataCovid19();
-    this.data1 = data1;
-    let data2 = await getDataCovid19VN();
-    this.data2 = data2;
+    this.data2 = await data1;
+    this.data1 =await data2;
   },
 };
 </script>

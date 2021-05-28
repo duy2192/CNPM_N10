@@ -1,17 +1,17 @@
 <template>
-    <div class="main">
-        <div class="container">
-            <h6 class="text-center text-light font-weight-bold">TRANG TIN VỀ DỊCH BỆNH VIÊM ĐƯỜNG HÔ HẤP CẤP COVID-19</h6>
-        </div>
-    </div>
+  <div class="footer" style="background-color: #303c54">
+      <footer
+        class="text-center text-light font-weight-bold"
+        style="background-color: #303c54"
+      >
+        TRANG TIN VỀ DỊCH BỆNH VIÊM ĐƯỜNG HÔ HẤP CẤP COVID-19
+      </footer>
+  </div>
 </template>
 <script>
 export default {
-    name:'Footer'
-}
+  name: "Footer",
+};
 </script>
 <style scoped>
-.main{
-      background-color: #303C54;
-}
 </style>

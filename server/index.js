@@ -6,6 +6,7 @@ const bodyParser = require('body-parser')
 const fileupload =require('express-fileupload')
 const path = require('path')
 var dir = path.join(__dirname, 'uploads');
+const {getdatacovidvn,getdatacovid}=require('./routes/data')
 
 app.use(express.static(dir));
 app.use(cors())
@@ -27,8 +28,12 @@ app.use('/users',userRouter)
 const newsRouter=require('./routes/NewsRouter')
 app.use('/news',newsRouter)
 
-const data=require('./routes/data.js')
-app.use('/data',data)
-
 const img = require('./routes/img.js')
 app.use('/img',img)
+
+
+setInterval(async () => {
+    await getdatacovidvn()
+    await getdatacovid()
+    console.log('Get data Covid19 successfully!')
+}, 3000000);

@@ -1,16 +1,16 @@
 /* eslint-disable no-useless-catch */
 const express = require('express')
 const router = express.Router()
-// const fs = require('fs');
 const cheerio = require('cheerio');
 const request = require('request-promise');
+const fs = require('fs');
 
 router.use((req, res, next) => {
     console.log('Time: ', Date.now())
     next()
 })
 
-router.get('/covid19vietnamdetails', async (req, res) => {
+const getdatacovidvn= async () => {
     const options = {
         uri: 'https://ncov.moh.gov.vn',
         rejectUnauthorized: false
@@ -29,14 +29,16 @@ router.get('/covid19vietnamdetails', async (req, res) => {
                 };
                 data.push(bn);
             });
-            res.json(data);
+            if(data.length>5000){
+            fs.writeFileSync('../src/assets/data1.json', JSON.stringify(data));
+        }
         } catch (error) {
             throw error
         }
     });
 
-})
-router.get('/covid19', async (req, res) => {
+}
+const getdatacovid= async () => {
     const options = {
         uri: 'https://ncov.moh.gov.vn',
         rejectUnauthorized: false
@@ -54,12 +56,14 @@ router.get('/covid19', async (req, res) => {
                 }
                 data.push(resdata);
             });
-            res.json(data)
+            if(data.length>0){
+            fs.writeFileSync('../src/assets/data2.json', JSON.stringify(data));
+            }
         } catch (error) {
             throw error
         }
     });
 
-})
+}
 
-module.exports = router
+module.exports = {getdatacovidvn,getdatacovid}

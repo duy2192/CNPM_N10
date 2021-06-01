@@ -154,27 +154,26 @@ const queryNews = async (text, page = 0) => {
     throw error
 }
 }
-//Lấy các bài post trong khoảng ngày A => ngày B
-//VD1: http://127.0.0.1:3000/blogposts/queryBlogPostsByDateRange?from=01-11-2018&to=05-11-2018
-const queryNewsByDateRange = async (from, to) => {
-    //format: dd-mm-yyyy    
-    let fromDate = new Date(parseInt(from.split('-')[2]),
-        parseInt(from.split('-')[1]) - 1,
-        parseInt(from.split('-')[0]))
-    let toDate = new Date(parseInt(to.split('-')[2]),
-        parseInt(to.split('-')[1]) - 1,
-        parseInt(to.split('-')[0]))
-    // eslint-disable-next-line no-useless-catch
-    try {
-        let news = await Newss.find({
-            date: { $gte: fromDate, $lte: toDate },
-            //$gte="greater than or equal", $lte="less than or equal"           
-        })
-        return news
-    } catch (error) {
-        throw error
-    }
-}
+
+// const queryNewsByDateRange = async (from, to) => {
+//     //format: dd-mm-yyyy    
+//     let fromDate = new Date(parseInt(from.split('-')[2]),
+//         parseInt(from.split('-')[1]) - 1,
+//         parseInt(from.split('-')[0]))
+//     let toDate = new Date(parseInt(to.split('-')[2]),
+//         parseInt(to.split('-')[1]) - 1,
+//         parseInt(to.split('-')[0]))
+//     // eslint-disable-next-line no-useless-catch
+//     try {
+//         let news = await Newss.find({
+//             date: { $gte: fromDate, $lte: toDate },
+//             //$gte="greater than or equal", $lte="less than or equal"           
+//         })
+//         return news
+//     } catch (error) {
+//         throw error
+//     }
+// }
 
 //Lấy nội dung chi tiết 1 BlogPost => ko cần token 
 
@@ -258,10 +257,6 @@ const unblockNews = async (newsid, tokenKey) => {
     }
 }
 
-//Xoá 1 bản ghi blogPost:
-//1. Xoá bản ghi trong bảng BlogPosts
-//2. Cập nhật trường tham chiếu "blogPosts" trong bảng Users
-//=> mảng blogPosts bớt đi 1 phần tử
 const deleteNews = async (newsId, tokenKey) => {
     // eslint-disable-next-line no-useless-catch
     try {
@@ -301,7 +296,7 @@ module.exports = {
     Newss,
     insertnewss,
     queryNews,
-    queryNewsByDateRange,
+    // queryNewsByDateRange,
     getDetailNews,
     updateNews,
     deleteNews,

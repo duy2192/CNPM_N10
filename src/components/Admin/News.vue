@@ -95,9 +95,9 @@
             :key="news._id"
             :class="{ 'text-danger': news.active != '1' }"
           >
-            <td>{{ index + 1 }}</td>
+            <td>{{page*6  + index + 1 }}</td>
             <td scope="row">{{ news.title }}</td>
-            <td>{{ news.date.slice(0, 10) }}</td>
+            <td>{{ news.date.slice(0, 10).split('-').reverse().join('/') }}</td>
             <td>{{ news.active == "1" ? "Ok" : "Blocked" }}</td>
             <td>
               <i class="fas fa-edit" @click="editnews(news._id)"></i
@@ -113,7 +113,7 @@
        <p class="text-center mt-5 font-weight-bold" style="text-dark" v-if="this.page>0"><u> {{`Trang ${this.page+1}`}}</u></p>
     <div class="" style="margin-left: 45%">
       <p class="btn previous font-weight-bold" @click="prevpage" v-if="this.page>0">&laquo; Trước</p>
-      <p class="btn next ml-1 font-weight-bold" @click="nextpage" v-if="(this.news<6&&this.page<this.total)||(this.news.length==6&&(this.total-this.page)>1)">Tiếp theo &raquo;</p>
+      <p class="btn next ml-1 font-weight-bold" @click="nextpage" v-if="(this.news.length<6&&this.page<this.total-1&&this.news.length>0)||(this.news.length==6&&(this.total-this.page)>1)">Tiếp theo &raquo;</p>
     </div>
 
     </div>
@@ -153,7 +153,6 @@ export default {
     let usernews = await getNewsbyID(this.userloggedin._id,"",0);
     this.news = usernews.data;
     this.total=usernews.total
-    console.log(this.total)
   },
   methods: {
     addnews() {

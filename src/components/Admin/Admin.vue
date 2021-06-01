@@ -1,5 +1,5 @@
 <template>
-  <div class="main">
+  <div class="main" v-if="this.email!=''">
     <nav class="nav__cont">
       <ul class="nav">
         <li class="nav_items" @click="avatarcl">
@@ -46,14 +46,19 @@
     </nav>
     <div class="wrapper">
       <main>
+    <transition enter-active-class="animated backInDown" leave-active-class="animated fadeOut" mode="out-in">
         <managenews v-if="this.role == 2 && this.task == '1'" />
-        <manageUser v-if="this.role == 2 && this.task == '0'" />
+
+        <manageUser v-if="this.role == 2 && this.task == '0'" />           
+
         <news
           v-if="
             (this.role == 1 && (this.task == '1' ||this.task=='0')) ||
             ( this.role == 2 && this.task == '3')
           "
-        />
+        />            
+    </transition>
+
       </main>
     </div>
   </div>

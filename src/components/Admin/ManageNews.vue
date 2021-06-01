@@ -29,10 +29,10 @@
             :class="{ 'bg-danger': news.active == '0' }"
             
           >
-            <td scope="row" v-if="news.author!=null">{{ key + 1 }}</td>
+            <td scope="row" v-if="news.author!=null">{{ page*6  + key + 1 }}</td>
             <td v-if="news.author!=null">{{ news.title }}</td>
             <td v-if="news.author!=null">{{ news.author.username }}</td>
-            <td v-if="news.author!=null">{{ news.date.slice(0, 10) }}</td>
+            <td v-if="news.author!=null">{{ news.date.slice(0, 10).split('-').reverse().join('/') }}</td>
             <td v-if="news.author!=null">
               <i
                 class="fas fa-ban"
@@ -73,7 +73,7 @@
         <p
           class="btn next ml-1 font-weight-bold"
           @click="nextpage"
-           v-if="(this.news<6&&this.page<this.total)||(this.news.length==6&&(this.total-this.page)>1)"
+           v-if="(this.news.length<6&&this.page<this.total-1&&this.news.length>0)||(this.news.length==6&&(this.total-this.page)>1)"
 
         >
           Tiếp theo &raquo;
@@ -108,7 +108,6 @@ export default {
         this.news = news.data1;
         this.total=news.total
       }
-      console.log(this.news)
     },
     async blocknews(id) {
       if (confirm("Chặn bài viết?")) {

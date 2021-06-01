@@ -118,10 +118,10 @@
               :key="news.title"
               :class="{ 'bg-danger': news.active == '0' }"
             >
-              <td scope="row">{{ key + 1 }}</td>
+              <td scope="row">{{page*6  + key + 1  }}</td>
               <td>{{ news.title }}</td>
               <td>{{ news.author.username }}</td>
-              <td>{{ news.date.slice(0, 10) }}</td>
+              <td>{{ news.date.slice(0, 10).split('-').reverse().join('/') }}</td>
               <td>
                 <i
                   class="fas fa-check"
@@ -162,7 +162,7 @@
           <p
             class="btn next ml-1 font-weight-bold"
             @click="nextpage"
-           v-if="(this.news<6&&this.page<this.total)||(this.news.length==6&&(this.total-this.page)>1)"
+           v-if="(this.news.length<6&&this.page<this.total-1&&this.news.length>0)||(this.news.length==6&&(this.total-this.page)>1)"
           >
             Tiếp theo &raquo;
           </p>
@@ -176,7 +176,6 @@ import { getallUser } from "@/APIs/usersAPI";
 import { registerUser } from "@/APIs/usersAPI";
 import { blockUser, unblockUser } from "@/APIs/usersAPI";
 import {
-  getQueryNews,
   blockNews,
   getNewsbyID,
   unblockNews,
@@ -261,7 +260,7 @@ export default {
       this.total=news.total
     },
     async searchnewsuser() {
-      let news = await getQueryNews(this.search.trim());
+      let news = await getNewsbyID(this.newsid,this.search.trim());
       if (news.result == "ok") {
         this.news = news.data;
       }
@@ -295,7 +294,7 @@ export default {
     },
     async searchnews() {
       this.news = await getNewsbyID(
-        this.userloggedin._id,
+        this.newsid,
         this.search.trim(),
         this.page
       );
@@ -306,7 +305,7 @@ export default {
       }
       this.page++;
       let news = await getNewsbyID(
-        this.userloggedin._id,
+        this.newsid,
         this.search.trim(),
         this.page
       )
@@ -320,7 +319,7 @@ export default {
       }
       this.page--;
       let news = await await getNewsbyID(
-        this.userloggedin._id,
+        this.newsid,
         this.search.trim(),
         this.page
       );

@@ -29,7 +29,6 @@
             v-if="this.forgot == 'Quên mật khẩu'"
             name="password"
             v-model="password"
-            v-validate="'required'"
             :class="{
               'form-control': true,
               'border-danger': errors.has('password'),

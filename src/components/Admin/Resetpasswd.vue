@@ -29,10 +29,13 @@
             placeholder="Xác Nhận Mật Khẩu"
           />
         </div>
+          <span class="text-danger" v-if="(this.pass1.length <=4||this.pass1.length <=4)&&this.pass1!='' "
+          >Mật khẩu mới cần lớn hơn 4 ký tự
+        </span><br>
         <span class="text-danger" v-if="this.pass1 != this.pass2"
-          >Mật khẩu không khớp
-        </span>
-        <span class="text-danger" v-if="this.pass1 == '' || this.pass == ''"
+          >Mật khẩu xác nhận không khớp
+        </span><br>
+        <span class="text-danger" v-if="this.pass1 == '' "
           >Chưa điền mật khẩu
         </span>
         <button
@@ -91,7 +94,7 @@ export default {
         let email = await this.$route.query.email;
         let oldpass = await this.$route.query.secretKey;
 
-        if (this.pass1 === this.pass2 && this.pass1 != "") {
+        if (this.pass1 === this.pass2 && this.pass1.length>=4) {
           let reset = await resetpasswd(email, this.pass1, oldpass);
           if (reset.result == "ok") {
             alert("Đổi mật khẩu thành công!");
@@ -104,7 +107,7 @@ export default {
       }
       if (this.option == "1") {
         let secretKey = await this.$route.query.secretKey;
-        if (this.pass != "" && this.pass1 == this.pass2) {
+        if (this.pass1.length>=4 && this.pass1 == this.pass2&this.pass!='') {
           let change = await changepasswd(this.pass, this.pass1, secretKey);
           if (change.result == "ok") {
             alert("Đổi mật khẩu thành công!");

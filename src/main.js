@@ -7,8 +7,7 @@ import VueRouter from 'vue-router'
 import VeeValidate from 'vee-validate'
 import VueSession from 'vue-session'
 import CKEditor from '@ckeditor/ckeditor5-vue2';
-import Paginate from 'vuejs-paginate'
-Vue.component('paginate', Paginate)
+
 Vue.use( CKEditor );
 Vue.use(VeeValidate)
 Vue.config.productionTip = false

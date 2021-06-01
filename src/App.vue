@@ -16,7 +16,9 @@
       href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap"
       rel="stylesheet"
     />
+    <transition enter-active-class="animated fadeIn delay" leave-active-class="animated fadeOut delay" mode="out-in">
     <router-view />
+    </transition>
   </div>
 </template>
 <script>
@@ -27,14 +29,16 @@ export default {
 </script>
 
 <style>
+@import "https://cdn.jsdelivr.net/npm/animate.css@3.5.1";
+
 * {
   font-family: "Open Sans", sans-serif;
   box-sizing: border-box;
 }
 body{
-   background-color: #fff;
+   background-color: #f5f6fa;
 }
 .delay{
-  animation-delay: 3s;
+  animation-delay: 0.3s;
 }
 </style>

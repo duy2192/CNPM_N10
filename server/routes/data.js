@@ -4,13 +4,14 @@ const router = express.Router()
 const cheerio = require('cheerio');
 const request = require('request-promise');
 const fs = require('fs');
+const tp = require('../uploads/tp.json')
 
 router.use((req, res, next) => {
     console.log('Time: ', Date.now())
     next()
 })
 
-const getdatacovidvn= async () => {
+const getdatacovidvn = async () => {
     const options = {
         uri: 'https://ncov.moh.gov.vn',
         rejectUnauthorized: false
@@ -29,16 +30,40 @@ const getdatacovidvn= async () => {
                 };
                 data.push(bn);
             });
-            if(data.length>5000){
-            fs.writeFileSync('../src/assets/data1.json', JSON.stringify(data));
-        }
+
+
+            data.forEach(data => {
+                tp.forEach(tpdata => {
+                    if (data.que == tpdata.Name && data.tinhtrang == "Đang điều trị") {
+                        tpdata.dieutri++
+                    }
+                    if (data.que == tpdata.Name && data.tinhtrang == "Khỏi") {
+                        tpdata.khoibenh++
+                    }
+                    if (data.que == tpdata.Name && data.tinhtrang == "Tử vong") {
+                        tpdata.tuvong++
+                    }
+                })
+            })
+            
+            if (data.length > 5000) {
+                tp.sort((a,b)=>b.dieutri-a.dieutri)
+                fs.writeFileSync('../src/assets/data1.json', JSON.stringify(data));
+                fs.writeFileSync('../src/assets/datatp.json', JSON.stringify(tp));
+                tp.forEach(tpdata => {
+                    tpdata.tuvong = 0
+                    tpdata.khoibenh = 0
+                    tpdata.dieutri = 0
+                })
+
+            }
         } catch (error) {
             throw error
         }
     });
 
 }
-const getdatacovid= async () => {
+const getdatacovid = async () => {
     const options = {
         uri: 'https://ncov.moh.gov.vn',
         rejectUnauthorized: false
@@ -56,8 +81,10 @@ const getdatacovid= async () => {
                 }
                 data.push(resdata);
             });
-            if(data.length>0){
-            fs.writeFileSync('../src/assets/data2.json', JSON.stringify(data));
+
+
+            if (data.length > 0) {
+                fs.writeFileSync('../src/assets/data2.json', JSON.stringify(data));
             }
         } catch (error) {
             throw error
@@ -66,4 +93,4 @@ const getdatacovid= async () => {
 
 }
 
-module.exports = {getdatacovidvn,getdatacovid}
+module.exports = { getdatacovidvn, getdatacovid }

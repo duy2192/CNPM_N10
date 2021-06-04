@@ -1,6 +1,6 @@
 const express=require('express')
 const app=express()
-const PORT=3000
+const {PORT}= require('./scripts/config')
 const cors=require('cors')
 const fileupload =require('express-fileupload')
 const path = require('path')
@@ -35,4 +35,4 @@ setInterval(async () => {
     await getdatacovidvn()
     await getdatacovid()
     console.log('Get data Covid19 successfully!')
-}, 300000);
+}, 7200000);

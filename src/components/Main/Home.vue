@@ -91,7 +91,7 @@
             leave-active-class="animated fadeOut delay"
             mode="out-in"
           >
-            <div class="text-center" v-if="this.option == 1">
+            <div class="text-center" v-if="this.option == 3">
               <input
                 type="text"
                 name=""
@@ -133,18 +133,16 @@
         </div>
       </div>
     </div>
-    <Footer />
   </div>
 </template>
 <script>
 import Header from "@/components/Main/Header";
-import Footer from "@/components/Main/Footer";
 import data2 from "@/assets/data2.json";
 import data1 from "@/assets/data1.json";
 import data3 from "@/assets/datatp.json";
 
 export default {
-  components: { Header, Footer },
+  components: { Header },
   name: "Home",
   data() {
     return {

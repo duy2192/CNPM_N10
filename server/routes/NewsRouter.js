@@ -2,16 +2,16 @@
 const express = require('express')
 const router = express.Router()
 const path = require('path')
+const { PORT, SERVER } = require('../scripts/config')
 
 const {
     insertnewss,
     queryNews,
-    queryNewsByDateRange,
+    // queryNewsByDateRange,
     getDetailNews,
     updateNews,
     deleteNews,
     verifyFileExtensions,
-    updateImg,
     getNewsbyId,
     blockNews,
     unblockNews
@@ -24,10 +24,10 @@ router.use((req, res, next) => {
 
 
 router.post('/insertNews1', async (req, res) => {
-    let { title, content } = req.body
+    let { title, content,img } = req.body
     let tokenKey = req.headers['x-access-token']
     try {
-        let data = await insertnewss(title, content, tokenKey)
+        let data = await insertnewss(title, content,img, tokenKey)
         res.json({
             result: 'ok',
             message: 'Thêm mới bài viết thành công',
@@ -41,9 +41,8 @@ router.post('/insertNews1', async (req, res) => {
         })
     }
 })
-router.put('/uploadimg', async (req, res) => {
+router.post('/uploadimg', async (req, res) => {
     try {
-        let {id} = req.body
         if (req.files) {
             const keys = Object.keys(req.files)
             if (keys.length === 0) {
@@ -67,18 +66,13 @@ router.put('/uploadimg', async (req, res) => {
                 if (error) {
                     throw error
                 }
-                let filenameup= fileName+'.'+fileExtension
-                let uptodb=await updateImg(id, filenameup)
-                if (uptodb == true) {
-                    if (key === keys[keys.length - 1]) {
-                        res.json({
-                            result: "ok",
-                            message: `Upload files successfully`,
-                            data: fileName
-                        })
-                    }
-                }else{
-                    return
+                let filenameup = fileName + '.' + fileExtension
+                if (key === keys[keys.length - 1]) {
+                    res.json({
+                        result: "ok",
+                        message: `Upload files successfully`,
+                        data: `${SERVER}:${PORT}/img/${filenameup}`
+                    })
                 }
             })
         }
@@ -93,10 +87,58 @@ router.put('/uploadimg', async (req, res) => {
     }
 })
 
+router.post('/uploadckimg', async (req, res) => {
+    try {
+        if (req.files) {
+            const keys = Object.keys(req.files)
+            if (keys.length === 0) {
+                res.json({
+                    result: "failed",
+                    message: "Cannot find files to upload"
+                })
+                return
+            }
+            //Chỉ cho phép upload một số "extensions" nào đó ?      
+            const verifyExtensions = await verifyFileExtensions(req.files)
+            if (verifyExtensions === false) {
+                throw `You can only upload png, jpg, gif, jpeg files, or fileSize > 0.5MB !`
+            }
+            keys.forEach(async (key) => {
+                var fileName = `${Math.random().toString(36)}`
+                const fileObject = await req.files[key]
+                var fileExtension = fileObject.name.split('.').pop()
+                const destination = `${path.join(__dirname, '../uploads/img')}/${fileName}.${fileExtension}`
+                let error = await fileObject.mv(destination) //mv = move 
+                if (error) {
+                    throw error
+                }
+                let filenameup = fileName + '.' + fileExtension
+
+                if (key === keys[keys.length - 1]) {
+                    res.json({
+                        result: "ok",
+                        message: `Upload files successfully`,
+                        url: `${SERVER}:${PORT}/img/` + filenameup
+                    })
+                }
+            }
+            )
+        }
+        else {
+            return
+        }
+    } catch (error) {
+        res.json({
+            result: "failed",
+            message: `Cannot upload files. Error: ${error}`
+        })
+    }
+})
+
 router.get('/getNewsbyId', async (req, res) => {
     try {
-        let {id,text,page}=req.query
-        let news1 = await getNewsbyId(id,text,page)
+        let { id, text, page } = req.query
+        let news1 = await getNewsbyId(id, text, page)
         res.json({
             result: 'ok',
             message: 'Query thành công danh sách bài viết',
@@ -112,15 +154,15 @@ router.get('/getNewsbyId', async (req, res) => {
 })
 
 router.get('/queryNews', async (req, res) => {
-    let { text,page } = req.query
+    let { text, page } = req.query
     try {
-        let news1 = await queryNews(text,page)
+        let news1 = await queryNews(text, page)
         res.json({
             result: 'ok',
             message: 'Query thành công danh sách bài viết',
-            total:news1.total,
+            total: news1.total,
             data: news1.news,
-            data1:news1.news1
+            data1: news1.news1
         })
     } catch (error) {
         res.json({
@@ -130,22 +172,24 @@ router.get('/queryNews', async (req, res) => {
     }
 })
 
-router.get('/queryNewsByDateRange', async (req, res) => {
-    let { from, to } = req.query
-    try {
-        let data = await queryNewsByDateRange(from, to)
-        res.json({
-            result: 'ok',
-            message: 'Query thành công danh sách bài viết',
-            data
-        })
-    } catch (error) {
-        res.json({
-            result: 'failed',
-            message: `Không thể lấy được danh sách bài viết.Lỗi : ${error}`
-        })
-    }
-})
+
+
+// router.get('/queryNewsByDateRange', async (req, res) => {
+//     let { from, to } = req.query
+//     try {
+//         let data = await queryNewsByDateRange(from, to)
+//         res.json({
+//             result: 'ok',
+//             message: 'Query thành công danh sách bài viết',
+//             data
+//         })
+//     } catch (error) {
+//         res.json({
+//             result: 'failed',
+//             message: `Không thể lấy được danh sách bài viết.Lỗi : ${error}`
+//         })
+//     }
+// })
 router.get('/getDetailNews', async (req, res) => {
     let { id } = req.query
     try {

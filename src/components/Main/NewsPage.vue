@@ -1,5 +1,5 @@
 <template>
-  <div class="main">
+  <div class="main mb-4">
     <Header />
     <div class="container header">
       <vueper-slides autoplay>
@@ -8,7 +8,7 @@
           :pause-on-hover="true"
           :key="i"
           :title="news.title"
-          :image="image"
+          :image="news.image"
           style="font-size: 25px"
           class="text-light"
         />
@@ -17,33 +17,38 @@
       <hr />
     </div>
 
-      <div class="container main" > 
-        <input
-          type="search"
-          class="border rounded mb-2"
-          placeholder="Tìm kiếm ... "
-          style="width: 300px; height: 45px"
-          v-model="search"
-          @keyup="searchnews"
-        />
-        <div class="row mt-3" v-for="news in this.news" :key="news._id">
+    <div class="container main">
+      <input
+        type="search"
+        class="border rounded mb-2"
+        placeholder="Tìm kiếm ... "
+        style="width: 300px; height: 45px"
+        v-model="search"
+        @keyup="searchnews"
+      />
+
+      <div class="row mt-3" v-for="news in this.news" :key="news._id" @click="routerpush(news._id)">
+
           <div class="imagenews col-md-6 col-lg-4" v-if="news.author != null">
             <img
-              :srcset="`http://localhost:3000/img/${news.image}`"
+              :srcset="`${news.image}`"
               alt=""
               style="width: 350px; height: 160px"
             />
           </div>
+
+
           <div
             class="titlenews col-md-6 col-lg-8 title mt-3"
             v-if="news.author != null"
-          >
+          >       
             <h5 class="font-weight-bold" style="color: #0652dd">
               {{ news.title }}
-            </h5>
+            </h5>        
+
           </div>
-        </div>
       </div>
+    </div>
 
     <p class="text-center mt-5 font-weight-bold" style="text-dark">
       <u>
@@ -54,7 +59,7 @@
         }}</u
       >
     </p>
-    <div class="" style="margin-left: 45%">
+    <div class="mb-5" style="margin-left: 45%">
       <p
         class="btn previous font-weight-bold"
         @click="prevpage"
@@ -82,6 +87,10 @@ import Header from "@/components/Main/Header";
 import { getQueryNews } from "@/APIs/newsAPI";
 import { VueperSlides, VueperSlide } from "vueperslides";
 import "vueperslides/dist/vueperslides.css";
+import {
+    SERVER_NAME,
+    SERVER_PORT,
+} from '@/APIs/apiParameters'
 export default {
   name: "newsPage",
   components: { Header, VueperSlides, VueperSlide },
@@ -92,7 +101,8 @@ export default {
       page: 0,
       total: 0,
       title: "Test",
-      image: "http://localhost:3000/img/bg-7.jpg",
+      SERVER_NAME,
+      SERVER_PORT
     };
   },
   async beforeCreate() {
@@ -124,6 +134,10 @@ export default {
       this.news = news.data;
       this.total = news.total;
     },
+      async routerpush(id) {
+        this.$router.push({ path: `/newscontent`, query: { id, page: this.page } });
+    },
+  
   },
 };
 </script>
@@ -150,15 +164,14 @@ a:hover {
 }
 
 .previous {
-  background-color: #0984e3;
+  background-color: #1abc9c;
   color: black;
   border-radius: 10%;
 }
 
 .next {
-  background-color: #0984e3;
+  background-color: #1abc9c;
   color: black;
   border-radius: 10%;
 }
-
 </style>

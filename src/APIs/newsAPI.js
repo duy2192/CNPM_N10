@@ -9,20 +9,19 @@ const API_GETNEWSBYID = `${SERVER_NAME}:${SERVER_PORT}/news/getNewsbyId`;
 const API_DELETENEWSBYID = `${SERVER_NAME}:${SERVER_PORT}/news/deleteNews`;
 const API_GETDETAILBYID = `${SERVER_NAME}:${SERVER_PORT}/news/getDetailNews`;
 const API_UPDATENEWS = `${SERVER_NAME}:${SERVER_PORT}/news/updateNews`;
-// const API_GETALLNEWS = `${SERVER_NAME}:${SERVER_PORT}/news/getallNews`;
 const API_GETQUERYNEWS = `${SERVER_NAME}:${SERVER_PORT}/news/queryNews`;
 const API_BLOCKNEWS = `${SERVER_NAME}:${SERVER_PORT}/news/blocknews`;
 const API_UNBLOCKNEWS = `${SERVER_NAME}:${SERVER_PORT}/news/unblocknews`;
+const API_UPLOADCKIMAGE = `${SERVER_NAME}:${SERVER_PORT}/news/uploadckimg`;
 
-// const API_GETDETAILNEWS = `${SERVER_NAME}:${SERVER_PORT}/news/getDetailNews`;
-
-export const userInsertNews = async (title, content, tokenKey) => {
+export const userInsertNews = async (title, content,img, tokenKey) => {
     try {
         let response = await fetch(API_INSERTNEWS, {
             method: 'POST',
             body: JSON.stringify({
                 title,
-                content
+                content,
+                img
             }),
             headers: {
                 "Content-type": "application/json",
@@ -42,7 +41,7 @@ export const userInsertNews = async (title, content, tokenKey) => {
 export const uploadimg = async (data) => {
     try {
         let response = await fetch(API_UPLOADIMAGE, {
-            method: 'PUT',
+            method: 'POST',
             body: data
         })
         let responseJson = await response.json()
@@ -106,17 +105,22 @@ export const getdetailnews = async (id) => {
         let responseJson = await response.json()
         return responseJson
     } catch (error) {
-        return {}
+        return {
+            result:error,
+            message:error
+        }
     }
 }
-export const updateNews = async (id,title,content,tokenKey) => {
+
+export const updateNews = async (id,title,content,img,tokenKey) => {
     try {
         let response = await fetch(API_UPDATENEWS, {
             method: 'PUT',
             body: JSON.stringify({
                 id,
                 title,
-                content
+                content,
+                img
             }),
             headers: {
                 "Content-type": "application/json",
@@ -190,5 +194,78 @@ export const unblockNews = async (id,tokenKey) => {
             resule: error,
             message: error
         }
+    }
+}
+
+export default class UploadAdapter {
+    constructor( loader ) {
+        // The file loader instance to use during the upload.
+        this.loader = loader;
+    }
+
+    // Starts the upload process.
+    upload() {
+        return this.loader.file
+            .then( file => new Promise( ( resolve, reject ) => {
+                this._initRequest();
+                this._initListeners( resolve, reject, file );
+                this._sendRequest( file );
+            } ) );
+    }
+
+    // Aborts the upload process.
+    abort() {
+        if ( this.xhr ) {
+            this.xhr.abort();
+        }
+    }
+
+    // Initializes the XMLHttpRequest object using the URL passed to the constructor.
+    _initRequest() {
+        const xhr = this.xhr = new XMLHttpRequest();
+
+        xhr.open( 'post', API_UPLOADCKIMAGE, true );
+        xhr.responseType = 'json';
+    }
+
+    // Initializes XMLHttpRequest listeners.
+    _initListeners( resolve, reject, file ) {
+        const xhr = this.xhr;
+        const loader = this.loader;
+        const genericErrorText = `Couldn't upload file: ${ file.name }.`;
+
+        xhr.addEventListener( 'error', () => reject( genericErrorText ) );
+        xhr.addEventListener( 'abort', () => reject() );
+        xhr.addEventListener( 'load', () => {
+            const response = xhr.response;
+
+            if ( !response || response.error ) {
+                return reject( response && response.error ? response.error.message : genericErrorText );
+            }
+
+            resolve( {
+                default: response.url
+            } );
+        } );
+
+        if ( xhr.upload ) {
+            xhr.upload.addEventListener( 'progress', evt => {
+                if ( evt.lengthComputable ) {
+                    loader.uploadTotal = evt.total;
+                    loader.uploaded = evt.loaded;
+                }
+            } );
+        }
+    }
+
+    // Prepares the data and sends the request.
+    _sendRequest( file ) {
+        // Prepare the form data.
+        const data = new FormData();
+
+        data.append( 'fileimg', file );
+
+        // Send the request.
+        this.xhr.send( data );
     }
 }

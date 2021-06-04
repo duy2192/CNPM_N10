@@ -4,22 +4,25 @@ const { verifyJWT } = require('./User')
 const NewsSchema = new Schema({
     title: { type: String, default: '', unique: true },
     content: { type: String, default: '' },
-    image: { type: String, default: 'bg-7.jpg' },
+    image: { type: String, default: 'http://35.240.169.246:8181/img/bg-24.jpg' },
     date: { type: Date, default: Date.now.toUTCString },
     active: { type: Number, default: 1 },
+    category:{type:Number,default:1},
     author: { type: mongoose.Schema.Types.ObjectId, ref: "users" },
 })
 
 const Newss = mongoose.model('Posts', NewsSchema)
 
-const insertnewss = async (title, content, tokenKey) => {
+const insertnewss = async (title, content,img, tokenKey) => {
     // eslint-disable-next-line no-useless-catch
     try {
         let signedInUser = await verifyJWT(tokenKey)
         let new1 = await Newss.create({
             title: title,
             content: content,
+            image:img,
             date: Date.now(),
+            category:1,
             author: signedInUser
         })
         await new1.save()
@@ -34,17 +37,6 @@ const insertnewss = async (title, content, tokenKey) => {
             throw error    }
 }
 
-const updateImg = async (id, img) => {
-    // eslint-disable-next-line no-useless-catch
-    try {
-        let news1 = await Newss.findById(id)
-        news1.image = await img
-        await news1.save()
-        return true
-    } catch (error) {
-        throw error
-    }
-}
 
 const getNewsbyId = async (id, text, page = 0) => {
     // eslint-disable-next-line no-useless-catch
@@ -62,6 +54,7 @@ const getNewsbyId = async (id, text, page = 0) => {
         })
         let total = countnews.length
         let news = await Newss.find({
+            category:1,
             author: id, $or: [
                 {
                     title: new RegExp(text, "i")
@@ -90,6 +83,7 @@ const queryNews = async (text, page = 0) => {
     try {
         let countnews = await Newss.find({
             active: 1,
+            category:1,
             $or: [
                 {
                     title: new RegExp(text, "i")
@@ -107,6 +101,7 @@ const queryNews = async (text, page = 0) => {
         let total = countnews.length
         let news = await Newss.find({
             active: 1,
+            category:1,
             $or: [
                 {
                     title: new RegExp(text, "i")
@@ -175,7 +170,7 @@ const queryNews = async (text, page = 0) => {
 //     }
 // }
 
-//Lấy nội dung chi tiết 1 BlogPost => ko cần token 
+//Lấy nội dung chi tiết 
 
 const getDetailNews = async (newsid) => {
     // eslint-disable-next-line no-useless-catch
@@ -189,9 +184,6 @@ const getDetailNews = async (newsid) => {
         throw error
     }
 }
-
-//Cập nhật 1 blogpost => yêu cầu token
-//Chỉ có tác giả mới cập nhật được BlogPost của mình
 
 const updateNews = async (newsid, updatedNews, tokenKey) => {
     // eslint-disable-next-line no-useless-catch
@@ -208,6 +200,8 @@ const updateNews = async (newsid, updatedNews, tokenKey) => {
             news.title : updatedNews.title
         news.content = !updatedNews.content ?
             news.content : updatedNews.content
+            news.image = !updatedNews.img ?
+            news.image : updatedNews.img
         news.date = Date.now()
         await news.save()
         return news
@@ -301,7 +295,6 @@ module.exports = {
     updateNews,
     deleteNews,
     verifyFileExtensions,
-    updateImg,
     getNewsbyId,
     blockNews,
     unblockNews

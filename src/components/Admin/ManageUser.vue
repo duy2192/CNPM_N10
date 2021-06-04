@@ -86,7 +86,7 @@
                 @click="blockuser(user.email)"
               ></i>
             </td>
-            <td><i class="fas fa-eye" @click="shownews(user._id)"></i></td>
+            <td><i class="fas fa-eye" @click="showallnews(user._id)"></i></td>
           </tr>
         </tbody>
       </table>
@@ -110,6 +110,7 @@
               <th>Tác giả</th>
               <th>Ngày viết</th>
               <th>Trạng thái</th>
+              <th>Xem bài viết</th>
             </tr>
           </thead>
           <tbody>
@@ -118,10 +119,12 @@
               :key="news.title"
               :class="{ 'bg-danger': news.active == '0' }"
             >
-              <td scope="row">{{page*6  + key + 1  }}</td>
+              <td scope="row">{{ page * 6 + key + 1 }}</td>
               <td>{{ news.title }}</td>
               <td>{{ news.author.username }}</td>
-              <td>{{ news.date.slice(0, 10).split('-').reverse().join('/') }}</td>
+              <td>
+                {{ news.date.slice(0, 10).split("-").reverse().join("/") }}
+              </td>
               <td>
                 <i
                   class="fas fa-check"
@@ -133,6 +136,16 @@
                   v-if="news.active == '0'"
                   @click="unblocknews(news._id)"
                 ></i>
+              </td>
+              <td>
+                <router-link
+                  :to="{ path: '/newscontent', query: { id: news._id } }"
+                  target="_blank"
+                  style="color: black"
+                  v-if="news.active!=0"
+                >
+                  <i class="fas fa-eye"></i>
+                </router-link>
               </td>
             </tr>
           </tbody>
@@ -162,7 +175,12 @@
           <p
             class="btn next ml-1 font-weight-bold"
             @click="nextpage"
-           v-if="(this.news.length<6&&this.page<this.total-1&&this.news.length>0)||(this.news.length==6&&(this.total-this.page)>1)"
+            v-if="
+              (this.news.length < 6 &&
+                this.page < this.total - 1 &&
+                this.news.length > 0) ||
+              (this.news.length == 6 && this.total - this.page > 1)
+            "
           >
             Tiếp theo &raquo;
           </p>
@@ -175,11 +193,7 @@
 import { getallUser } from "@/APIs/usersAPI";
 import { registerUser } from "@/APIs/usersAPI";
 import { blockUser, unblockUser } from "@/APIs/usersAPI";
-import {
-  blockNews,
-  getNewsbyID,
-  unblockNews,
-} from "@/APIs/newsAPI.js";
+import { blockNews, getNewsbyID, unblockNews } from "@/APIs/newsAPI.js";
 
 export default {
   name: "manageUser",
@@ -193,8 +207,8 @@ export default {
       search: "",
       news: [],
       newsid: "",
-      page:0,
-      total:0
+      page: 0,
+      total: 0,
     };
   },
   async beforeCreate() {
@@ -252,15 +266,15 @@ export default {
         return;
       }
     },
-    async shownews(id) {
+    async showallnews(id) {
       this.newsid = id;
       this.action = "2";
       let news = await getNewsbyID(id, this.search, 0);
       this.news = news.data;
-      this.total=news.total
+      this.total = news.total;
     },
     async searchnewsuser() {
-      let news = await getNewsbyID(this.newsid,this.search.trim());
+      let news = await getNewsbyID(this.newsid, this.search.trim());
       if (news.result == "ok") {
         this.news = news.data;
       }
@@ -293,25 +307,16 @@ export default {
       }
     },
     async searchnews() {
-      this.news = await getNewsbyID(
-        this.newsid,
-        this.search.trim(),
-        this.page
-      );
+      this.news = await getNewsbyID(this.newsid, this.search.trim(), this.page);
     },
     async nextpage() {
       if (this.page == this.total) {
         return;
       }
       this.page++;
-      let news = await getNewsbyID(
-        this.newsid,
-        this.search.trim(),
-        this.page
-      )
+      let news = await getNewsbyID(this.newsid, this.search.trim(), this.page);
       this.news = news.data;
       this.total = news.total;
-      
     },
     async prevpage() {
       if (this.page == 0) {
@@ -339,13 +344,13 @@ a:hover {
   color: #f5f6fa;
 }
 .previous {
-  background-color: #0984e3;
+  background-color: #1abc9c;
   color: black;
   border-radius: 10%;
 }
 
 .next {
-  background-color: #0984e3;
+  background-color: #1abc9c;
   color: black;
   border-radius: 10%;
 }

@@ -17,28 +17,33 @@
       rel="stylesheet"
     />
     <transition enter-active-class="animated fadeIn delay" leave-active-class="animated fadeOut delay" mode="out-in">
-    <router-view />
+    <router-view  :key="$route.fullPath"/>
     </transition>
   </div>
 </template>
 <script>
+
 export default {
   name: "App",
-  components: {},
 };
 </script>
 
 <style>
 @import "https://cdn.jsdelivr.net/npm/animate.css@3.5.1";
-
 * {
   font-family: "Open Sans", sans-serif;
   box-sizing: border-box;
 }
+html{
+  height: 100%;
+}
 body{
    background-color: #f5f6fa;
+  min-height: 100%;
+  display: grid;
+
 }
 .delay{
-  animation-delay: 0.3s;
+  animation-delay: 0s;
 }
 </style>

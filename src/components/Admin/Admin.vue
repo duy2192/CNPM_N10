@@ -11,6 +11,8 @@
           />
           <p class="txtli text-info">{{ this.username }}</p>
         </li>
+            <transition enter-active-class="animated fadeInDown" leave-active-class="animated fadeOutUp" mode="out-in">
+        <div v-if="this.avatar == '1'">
         <li class="nav__items" v-if="this.avatar == '1'">
           <p
             class="txtli text-info"
@@ -25,6 +27,8 @@
             <u> Đăng xuất</u>
           </p>
         </li>
+        </div>
+            </transition>
         <li class="nav__items mt-3" v-if="this.role == 2" @click="manageUsercl">
           <p class="txtli font-weight-bold">Quản lý tài khoản</p>
         </li>
@@ -110,7 +114,7 @@ export default {
     },
     logout() {
       this.$session.destroy();
-      this.$router.push("/");
+      this.$router.push("/login");
     },
     avatarcl() {
       if (this.avatar == "1") {

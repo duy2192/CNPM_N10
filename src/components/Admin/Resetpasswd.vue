@@ -53,7 +53,7 @@
         </router-link>
         <router-link
           v-if="this.option == '0'"
-          :to="{ path: '/' }"
+          :to="{ path: '/login' }"
           class="text-light"
           style="margin-left: 45%"
           ><u>Trở về</u>

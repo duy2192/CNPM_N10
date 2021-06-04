@@ -20,6 +20,7 @@
             <th>Tác giả</th>
             <th>Ngày viết</th>
             <th>Trạng thái</th>
+            <th>Xem bài viết</th>
           </tr>
         </thead>
         <tbody>
@@ -27,13 +28,16 @@
             v-for="(news, key) in this.news"
             :key="news.title"
             :class="{ 'bg-danger': news.active == '0' }"
-            
           >
-            <td scope="row" v-if="news.author!=null">{{ page*6  + key + 1 }}</td>
-            <td v-if="news.author!=null">{{ news.title }}</td>
-            <td v-if="news.author!=null">{{ news.author.username }}</td>
-            <td v-if="news.author!=null">{{ news.date.slice(0, 10).split('-').reverse().join('/') }}</td>
-            <td v-if="news.author!=null">
+            <td scope="row" v-if="news.author != null">
+              {{ page * 6 + key + 1 }}
+            </td>
+            <td v-if="news.author != null">{{ news.title }}</td>
+            <td v-if="news.author != null">{{ news.author.username }}</td>
+            <td v-if="news.author != null">
+              {{ news.date.slice(0, 10).split("-").reverse().join("/") }}
+            </td>
+            <td v-if="news.author != null">
               <i
                 class="fas fa-ban"
                 @click="unblocknews(news._id)"
@@ -45,7 +49,16 @@
                 v-if="news.active == '1'"
               ></i>
             </td>
-
+            <td>
+              <router-link
+                :to="{ path: '/newscontent', query: { id: news._id } }"
+                target="_blank"
+                style="color: black"
+                v-if="news.active!=0"
+              >
+                <i class="fas fa-eye"></i>
+              </router-link>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -73,8 +86,12 @@
         <p
           class="btn next ml-1 font-weight-bold"
           @click="nextpage"
-           v-if="(this.news.length<6&&this.page<this.total-1&&this.news.length>0)||(this.news.length==6&&(this.total-this.page)>1)"
-
+          v-if="
+            (this.news.length < 6 &&
+              this.page < this.total - 1 &&
+              this.news.length > 0) ||
+            (this.news.length == 6 && this.total - this.page > 1)
+          "
         >
           Tiếp theo &raquo;
         </p>
@@ -106,7 +123,7 @@ export default {
       let news = await getQueryNews(this.search.trim());
       if (news.result == "ok") {
         this.news = news.data1;
-        this.total=news.total
+        this.total = news.total;
       }
     },
     async blocknews(id) {
@@ -164,13 +181,13 @@ a:hover {
   color: #f5f6fa;
 }
 .previous {
-  background-color: #0984e3;
+  background-color: #1abc9c;
   color: black;
   border-radius: 10%;
 }
 
 .next {
-  background-color: #0984e3;
+  background-color: #1abc9c;
   color: black;
   border-radius: 10%;
 }

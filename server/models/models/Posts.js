@@ -1,10 +1,11 @@
 const { mongoose } = require('../models')
 const { Schema } = mongoose
 const { verifyJWT } = require('./User')
+const {SERVER,PORT}=require('../../scripts/config')
 const NewsSchema = new Schema({
     title: { type: String, default: '', unique: true },
     content: { type: String, default: '' },
-    image: { type: String, default: 'http://35.240.169.246:8181/img/bg-24.jpg' },
+    image: { type: String, default: `${SERVER}:${PORT}/img/bg-24.jpg` },
     date: { type: Date, default: Date.now.toUTCString },
     active: { type: Number, default: 1 },
     category:{type:Number,default:1},

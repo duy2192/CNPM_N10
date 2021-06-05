@@ -44,7 +44,9 @@
           >       
             <h5 class="font-weight-bold" style="color: #0652dd">
               {{ news.title }}
-            </h5>        
+            </h5>
+            <h6 style="color:#95a5a6">
+               {{ news.date.slice(0, 10).split("-").reverse().join("/") }}</h6>        
 
           </div>
       </div>
@@ -166,12 +168,12 @@ a:hover {
 .previous {
   background-color: #1abc9c;
   color: black;
-  border-radius: 10%;
+  border-radius: 20px;
 }
 
 .next {
   background-color: #1abc9c;
   color: black;
-  border-radius: 10%;
+  border-radius: 20px;
 }
 </style>

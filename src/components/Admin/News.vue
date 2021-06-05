@@ -158,7 +158,7 @@
         <p
           class="btn previous font-weight-bold"
           @click="prevpage"
-          v-if="this.page > 0"
+          v-if="this.page > 0&&this.news.length>0"
         >
           &laquo; Trước
         </p>
@@ -188,6 +188,10 @@ import {
   getdetailnews,
   updateNews,
 } from "@/APIs/newsAPI";
+import {
+    SERVER_NAME,
+    SERVER_PORT,
+} from '@/APIs/apiParameters'
 import UploadAdapter from "@/APIs/newsAPI";
 export default {
   name: "news",
@@ -200,7 +204,7 @@ export default {
       news: [],
       fileExtension: "",
       userloggedin: null,
-      resimg: "http://35.240.169.246:8181/img/bg-24.jpg",
+      resimg:`${SERVER_NAME}:${SERVER_PORT}/img/bg-24.jpg`,
       idnews: "",
       search: "",
       page: 0,
@@ -225,6 +229,7 @@ export default {
       }
     },
     async onfilechange(event) {
+      if(!event.target.files[0]) return
       let selectedfile = event.target.files[0];
       this.fileExtension = selectedfile.name.split(".").pop();
       if (selectedfile != null) {
@@ -259,7 +264,7 @@ export default {
           this.title = "";
           this.editorData = "";
           this.total = newsresponse.total;
-          this.resimg='http://35.240.169.246:8181/img/bg--24.jpg'
+          this.resimg=`${SERVER_NAME}:${SERVER_PORT}/img/bg-24.jpg`
         } else {
           alert(res.message);
         }
@@ -313,7 +318,7 @@ export default {
           this.title = "";
           this.editorData = "";
           this.total = newsresponse.total;
-          this.resimg='http://35.240.169.246:8181/img/bg-24.jpg'
+          this.resimg=`${SERVER_NAME}:${SERVER_PORT}/img/bg-24.jpg`
         } else {
           alert(res.message);
         }
@@ -372,12 +377,12 @@ a:hover {
 .previous {
   background-color: #1abc9c;
   color: black;
-  border-radius: 10%;
+  border-radius: 20px;
 }
 
 .next {
   background-color: #1abc9c;
   color: black;
-  border-radius: 10%;
+  border-radius: 20px;
 }
 </style>

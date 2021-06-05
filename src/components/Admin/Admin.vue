@@ -71,7 +71,7 @@
 import managenews from "./ManageNews";
 import manageUser from "./ManageUser";
 import news from "./News";
-
+import {verifyUser} from '@/APIs/usersAPI'
 export default {
   components: { managenews, manageUser, news },
   name: "Admin",
@@ -90,11 +90,16 @@ export default {
   async beforeCreate() {
     if (this.$session.exists()) {
       let user = await this.$session.get("loggedInUser");
+      this.token = user.tokenKey ? user.tokenKey : "";
+      const verify= await verifyUser(this.token)
+      if(verify.result!='ok'){
+        this.$session.destroy();
+        this.$router.push("/login");
+      }
       this.email = user.email;
       this.username = user.username ? user.username : "";
       this.isloggedIn = user ? true : false;
       this.role = user.active ? user.active : "";
-      this.token = user.tokenKey ? user.tokenKey : "";
     } else {
       this.email = "";
       this.username = "";

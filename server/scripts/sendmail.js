@@ -1,5 +1,5 @@
 const nodemailer = require('nodemailer')
-const {PORT,SERVER}= require('./config')
+const SERVER= 'da29.me'
 const sendEmailregister = async (receiverEmail, secretKey,password) => {	    
     // eslint-disable-next-line no-useless-catch
     try {
@@ -21,7 +21,7 @@ const sendEmailregister = async (receiverEmail, secretKey,password) => {
             </prev>
             <br>
             <h1 style='color: green'>Click vào link để kích hoạt tài khoản:</h1>
-            <span>${SERVER}:${PORT}/users/activeUser?secretKey=${secretKey}&email=${receiverEmail}</span></div>` 
+            <a href="${SERVER}/#/activeuser?secretKey=${secretKey}&email=${receiverEmail}" style="color:green">ACTIVE ACCOUNT!</a></div>` 
         }
         let info = await transporter.sendMail(mailOptions)
         console.log('Message sent: %s', info.messageId);
@@ -44,7 +44,7 @@ const sendEmailresetPassword = async (email,secretKey) => {
             to: email, 
             subject: 'Reset password',         
             html: `<div style="text-align: center"><h1 style="color: blue">Click vào link để đặt lại mật khẩu!</h1><br>
-                   ${SERVER}:8080/#/resetpasswd?email=${email}&secretKey=${secretKey} <div>`
+                 <a href="${SERVER}/#/resetpasswd?email=${email}&secretKey=${secretKey}">RESET PASSWORD! </a> <div>`
         }
         let info = await transporter.sendMail(mailOptions)
         console.log('Message sent: %s', info.messageId);

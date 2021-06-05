@@ -11,6 +11,47 @@ const API_REQRESETPASSWD = `${SERVER_NAME}:${SERVER_PORT}/users/reqresetpasswd`;
 const API_RESETPASSWD = `${SERVER_NAME}:${SERVER_PORT}/users/resetpasswd`;
 const API_CHANGEPASSWD = `${SERVER_NAME}:${SERVER_PORT}/users/changepasswd`;
 const API_UNBLOCKUSER = `${SERVER_NAME}:${SERVER_PORT}/users/unblockuser`;
+const API_ACTIVEUSER = `${SERVER_NAME}:${SERVER_PORT}/users/activeuser`;
+const API_VERIFYUSER = `${SERVER_NAME}:${SERVER_PORT}/users/jwtTest`;
+
+
+export const activeUser = async (email, secretKey) => {
+    try {
+        let response = await fetch(API_ACTIVEUSER, {
+            method: 'PUT',
+            body: `email=${email}&secretKey=${secretKey}`,
+            headers: {
+                "Content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+            },
+        })
+        let responseJson = await response.json()
+        return responseJson
+    } catch (error) {
+        return {
+            result:error,
+            message: error
+        }
+    }
+}
+
+export const verifyUser = async (token) => {
+    try {
+        let response = await fetch(API_VERIFYUSER, {
+            method: 'GET',
+            headers: {
+                "Content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+                "x-access-token":token
+            },
+        })
+        let responseJson = await response.json()
+        return responseJson
+    } catch (error) {
+        return {
+            result:error,
+            message: error
+        }
+    }
+}
 
 export const registerUser = async (name, email) => {
     try {

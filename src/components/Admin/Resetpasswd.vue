@@ -78,7 +78,7 @@ export default {
     };
   },
   async beforeCreate() {
-    if (this.$session.exists("loggrdInUser")) {
+    if (this.$session.exists("loggedInUser")) {
       let secretKey = await this.$route.query.secretKey;
       let token = await this.$session.get("loggedInUser").tokenKey;
       if (secretKey == token) {

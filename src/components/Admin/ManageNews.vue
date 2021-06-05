@@ -79,7 +79,7 @@
         <p
           class="btn previous font-weight-bold"
           @click="prevpage"
-          v-if="this.page > 0"
+          v-if="this.page > 0&&this.news.length>0"
         >
           &laquo; Trước
         </p>
@@ -183,12 +183,12 @@ a:hover {
 .previous {
   background-color: #1abc9c;
   color: black;
-  border-radius: 10%;
+  border-radius: 20px;
 }
 
 .next {
   background-color: #1abc9c;
   color: black;
-  border-radius: 10%;
+  border-radius: 20px;
 }
 </style>

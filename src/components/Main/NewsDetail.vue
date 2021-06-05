@@ -4,7 +4,7 @@
     <div class="container" v-if="this.news != null">
       <div class="row">
         <div class="col-lg-9 col-md-8 col-sm-12 title ">
-          <h3 class="font-weight-bold">{{ this.news.title }}</h3>
+          <h3 class="font-weight-bold mb-5">{{ this.news.title }}</h3>
           <div v-html="this.news.content"></div>
         </div>
         <div class="col-lg-3 col-md-4" v-if="this.newsother!=null">

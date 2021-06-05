@@ -11,7 +11,7 @@
       >
         Thêm tài khoản
       </button>
-      <form v-if="this.action == '1'" onsubmit="return false;">
+      <form v-show="this.action == '1'" onsubmit="return false;">
         <div class="form-group">
           <input
             type="text"
@@ -28,7 +28,7 @@
           <input
             type="text"
             name="email"
-            id="iname"
+            id="imail"
             class="form-control"
             placeholder="Email"
             aria-describedby="helpId"
@@ -168,7 +168,7 @@
           <p
             class="btn previous font-weight-bold"
             @click="prevpage"
-            v-if="this.page > 0"
+            v-if="this.page > 0&&this.news.length>0"
           >
             &laquo; Trước
           </p>
@@ -346,12 +346,12 @@ a:hover {
 .previous {
   background-color: #1abc9c;
   color: black;
-  border-radius: 10%;
+  border-radius: 20px;
 }
 
 .next {
   background-color: #1abc9c;
   color: black;
-  border-radius: 10%;
+  border-radius: 20px;
 }
 </style>

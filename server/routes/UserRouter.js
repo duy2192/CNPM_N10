@@ -51,18 +51,20 @@ router.post('/registerUser', async (req, res) =>{
 	}
 })
 
-router.get('/activeuser', async (req, res) =>{	
-	let {email, secretKey} = req.query	
+router.put('/activeuser', async (req, res) =>{	
+	let {email, secretKey} = req.body	
     
 	try {
 		await activeUser(email, secretKey)
-		res.send(`<div style='text-align: center'><h1 style="color:MediumSeaGreen;">Kích hoạt User thành công</h1><br>
-		<a href='http://localhost:8080/#/admin' style='color:blue''>Click_Here!</a>
-</div>
-		`)
+		res.json({
+			result:'ok',
+			message:'Kích hoạt Account thành công!'
+		})
 	} catch(error) {
-		res.send(`<h1 style="color:Red;">Không kích hoạt được User, lỗi: ${error}</h1>`)
-	}
+		res.json({
+			result:'failed',
+			message:`Kích hoạt Account không thành công!. Error: ${error}`
+		})	}
 })
 
 router.post('/login', async (req, res) =>{	

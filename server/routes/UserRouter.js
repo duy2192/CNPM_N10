@@ -87,10 +87,11 @@ router.post('/login', async (req, res) =>{
 router.get('/jwtTest', async (req, res) => {		
 	let tokenKey = req.headers['x-access-token']
     try {
-        await verifyJWT(tokenKey)
+        const data = await verifyJWT(tokenKey)
 		res.json({
 			result: 'ok',
-			message: 'Verify Json Web Token thành công',	  		
+			message: 'Verify Json Web Token thành công',
+			data	  		
 	  	})	
 	} catch(error) {
 		res.json({

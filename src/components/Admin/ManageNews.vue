@@ -16,6 +16,7 @@
         <thead class="thead-inverse">
           <tr>
             <th>STT</th>
+            <th>Danh mục</th>
             <th>Tiêu đề</th>
             <th>Tác giả</th>
             <th>Ngày viết</th>
@@ -29,15 +30,16 @@
             :key="news.title"
             :class="{ 'bg-danger': news.active == '0' }"
           >
-            <td scope="row" v-if="news.author != null">
+            <td scope="row" v-if="news.author != null&&news.category.active==1" >
               {{ page * 6 + key + 1 }}
             </td>
-            <td v-if="news.author != null">{{ news.title }}</td>
-            <td v-if="news.author != null">{{ news.author.username }}</td>
-            <td v-if="news.author != null">
+            <td v-if="news.category.active==1">{{news.category.name}}  </td>
+            <td style="max-width:650px" v-if="news.author != null&&news.category.active==1">{{ news.title }}</td>
+            <td v-if="news.author != null&&news.category.active==1">{{ news.author.username }}</td>
+            <td v-if="news.author != null&&news.category.active==1">
               {{ news.date.slice(0, 10).split("-").reverse().join("/") }}
             </td>
-            <td v-if="news.author != null">
+            <td v-if="news.author != null&&news.category.active==1">
               <i
                 class="fas fa-ban"
                 @click="unblocknews(news._id)"
@@ -49,7 +51,7 @@
                 v-if="news.active == '1'"
               ></i>
             </td>
-            <td>
+            <td v-if="news.author != null&&news.category.active==1">
               <router-link
                 :to="{ path: '/newscontent', query: { id: news._id } }"
                 target="_blank"

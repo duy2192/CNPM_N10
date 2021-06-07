@@ -6,7 +6,7 @@
       <ul class="links">
         <li><router-link :to="{path:'/'}">Trang chủ</router-link></li> 
         <li><router-link :to="{path:'/news'}">Tin tức</router-link></li>
-        <li><a href="#">Điều cần biết</a></li>
+        <!-- <li><a href="#">Điều cần biết</a></li> -->
       </ul>
       <label for="nav-toggle" class="icon-burger">
         <div class="line"></div>
@@ -57,7 +57,7 @@ nav .links {
   width: 60%;
   height: 100%;
   display: flex;
-  justify-content: space-around;
+  justify-content:space-evenly;
   align-items: center;
 }
 nav .links li {

@@ -8,11 +8,33 @@
       class="mb-5"
       v-if="this.actionnews == 1 || this.actionnews == '3'"
     >
-      <span class="font-weight-bold" >Tiêu đề</span><br />
-      <textarea name="" id="" style="width:100%" rows="3" v-model="title"></textarea
+      <span class="font-weight-bold">Tiêu đề</span><br />
+      <textarea
+        name=""
+        id=""
+        style="width: 100%"
+        rows="3"
+        v-model="title"
+      ></textarea
       ><br />
       <span class="font-weight-bold text-danger" v-if="this.title.trim() === ''"
         >Tiêu đề không được để trống</span
+      ><br />
+      <span class="font-weight-bold" v-if="this.actionnews==1">Danh mục</span><br />
+
+      <select name="" id="" class="mt-3" @change="changecate" v-if="this.actionnews==1">
+        <option :value="``">--</option>
+        <option
+          v-for="cate in this.Category"
+          :key="cate.name"
+          :value="`${cate._id}`"
+
+        >
+          {{ cate.name }}
+        </option></select
+      ><br />
+      <span class="font-weight-bold text-danger" v-if="this.cateid.trim() == ''&&this.actionnews==1"
+        >Chọn danh mục</span
       >
       <div class="mt-3" style="width: 300px">
         <div class="form-group font-weight-bold">
@@ -110,6 +132,7 @@
         <thead class="thead-inverse">
           <tr>
             <th>STT</th>
+            <th>Danh mục</th>
             <th>Tiêu đề</th>
             <th>Ngày viết</th>
             <th>Trạng thái</th>
@@ -120,11 +143,13 @@
         <tbody>
           <tr
             v-for="(news, index) in this.news"
-            :key="news._id"
-            :class="{ 'bg-danger': news.active != '1' }"
+            :key="news.title"
+            :class="{ 'bg-danger': news.active != '1'||news.category.active==0  }"
+         
           >
-            <td>{{ page * 6 + index + 1 }}</td>
-            <td scope="row">{{ news.title }}</td>
+            <td >{{ page * 6 + index + 1 }}</td>
+            <td>{{news.category.name}} <p v-if="news.category.active==0">(Đã xóa)</p> </td>
+            <td style="max-width: 650px" scope="row">{{ news.title }}</td>
             <td>{{ news.date.slice(0, 10).split("-").reverse().join("/") }}</td>
             <td>{{ news.active == "1" ? "Ok" : "Blocked" }}</td>
             <td>
@@ -137,8 +162,9 @@
             <td>
               <router-link
                 :to="{ path: '/newscontent', query: { id: news._id } }"
-                target="_blank" style="color: black"
-                v-if="news.active!=0"
+                target="_blank"
+                style="color: black"
+                v-if="news.active != 0&&news.category.active==1"
               >
                 <i class="fas fa-eye"></i>
               </router-link>
@@ -158,7 +184,7 @@
         <p
           class="btn previous font-weight-bold"
           @click="prevpage"
-          v-if="this.page > 0&&this.news.length>0"
+          v-if="this.page > 0 && this.news.length > 0"
         >
           &laquo; Trước
         </p>
@@ -179,7 +205,7 @@
   </div>
 </template>
 <script>
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic"; //trình Editor viết bài
 import {
   userInsertNews,
   uploadimg,
@@ -187,16 +213,15 @@ import {
   deleteNewsbyId,
   getdetailnews,
   updateNews,
-} from "@/APIs/newsAPI";
-import {
-    SERVER_NAME,
-    SERVER_PORT,
-} from '@/APIs/apiParameters'
+} from "@/APIs/newsAPI"; //Call APIs
+import { getCategory } from "@/APIs/categoryAPI";
+import { SERVER_NAME, SERVER_PORT } from "@/APIs/apiParameters"; //Địa chỉ Client
 import UploadAdapter from "@/APIs/newsAPI";
 export default {
   name: "news",
   data() {
     return {
+      // Các biến
       actionnews: "0",
       editor: ClassicEditor,
       editorData: "",
@@ -204,21 +229,27 @@ export default {
       news: [],
       fileExtension: "",
       userloggedin: null,
-      resimg:`${SERVER_NAME}:${SERVER_PORT}/img/bg-24.jpg`,
+      resimg: `${SERVER_NAME}:${SERVER_PORT}/img/bg-24.jpg`,
       idnews: "",
       search: "",
       page: 0,
       total: 0,
       editorConfig: { extraPlugins: [this.uploader] },
-    };
+      Category: "",
+      cateid: "",
+    }; //
   },
   async beforeCreate() {
+    // Trước khi components được khởi tạo
     this.userloggedin = await this.$session.get("loggedInUser");
     let usernews = await getNewsbyID(this.userloggedin._id, "", 0);
     this.news = usernews.data;
     this.total = usernews.total;
+    let category = await getCategory();
+    this.Category = category.data;
   },
   methods: {
+    // Các phương thức (Hàm)
     addnews() {
       if (this.actionnews == "0") {
         this.actionnews = "1";
@@ -229,7 +260,7 @@ export default {
       }
     },
     async onfilechange(event) {
-      if(!event.target.files[0]) return
+      if (!event.target.files[0]) return;
       let selectedfile = event.target.files[0];
       this.fileExtension = selectedfile.name.split(".").pop();
       if (selectedfile != null) {
@@ -246,25 +277,28 @@ export default {
       }
     },
     async savenews() {
-      if (this.title.trim() != "" && this.editorData.trim() != "") {
+      if (this.title.trim() != "" && this.editorData.trim() != ""&& this.cateid!='') {
         let res = await userInsertNews(
           this.title,
           this.editorData,
           this.resimg,
+          this.cateid,
           this.userloggedin.tokenKey
         );
         if (res.result == "ok") {
           alert("Thêm bài viết thành công!");
           this.actionnews = "0";
+          this.cateid=''
           let newsresponse = await getNewsbyID(
             this.userloggedin._id,
-            this.search.trim()
+            this.search.trim(),
+            this.page
           );
           this.news = await newsresponse.data;
           this.title = "";
           this.editorData = "";
           this.total = newsresponse.total;
-          this.resimg=`${SERVER_NAME}:${SERVER_PORT}/img/bg-24.jpg`
+          this.resimg = `${SERVER_NAME}:${SERVER_PORT}/img/bg-24.jpg`;
         } else {
           alert(res.message);
         }
@@ -276,7 +310,8 @@ export default {
         if (res.result == "ok") {
           let newsresponse = await getNewsbyID(
             this.userloggedin._id,
-            this.search.trim()
+            this.search.trim(),
+            this.page
           );
           this.news = await newsresponse.data;
           this.total = newsresponse.total;
@@ -312,13 +347,14 @@ export default {
           this.actionnews = "0";
           let newsresponse = await getNewsbyID(
             this.userloggedin._id,
-            this.search.trim()
+            this.search.trim(),
+            this.page
           );
           this.news = await newsresponse.data;
           this.title = "";
           this.editorData = "";
           this.total = newsresponse.total;
-          this.resimg=`${SERVER_NAME}:${SERVER_PORT}/img/bg-24.jpg`
+          this.resimg = `${SERVER_NAME}:${SERVER_PORT}/img/bg-24.jpg`;
         } else {
           alert(res.message);
         }
@@ -365,7 +401,10 @@ export default {
         return new UploadAdapter(loader);
       };
     },
-
+    changecate(e) {
+      this.cateid = e.target.value;
+      console.log(this.cateid);
+    },
   },
 };
 </script>
@@ -383,6 +422,12 @@ a:hover {
 .next {
   background-color: #1abc9c;
   color: black;
+  border-radius: 20px;
+}
+select {
+  border-radius: 20px;
+}
+option {
   border-radius: 20px;
 }
 </style>

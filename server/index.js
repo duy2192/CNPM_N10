@@ -27,6 +27,10 @@ app.use('/users',userRouter)
 const newsRouter=require('./routes/NewsRouter')
 app.use('/news',newsRouter)
 
+const categoryRouter=require('./routes/CategoryRouter')
+app.use('/category',categoryRouter)
+
+
 const img = require('./routes/img.js')
 app.use('/img',img)
 

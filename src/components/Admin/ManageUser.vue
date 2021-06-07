@@ -106,6 +106,7 @@
           <thead class="thead-inverse">
             <tr>
               <th>STT</th>
+              <th>Danh mục</th>
               <th>Tiêu đề</th>
               <th>Tác giả</th>
               <th>Ngày viết</th>
@@ -117,10 +118,11 @@
             <tr
               v-for="(news, key) in this.news"
               :key="news.title"
-              :class="{ 'bg-danger': news.active == '0' }"
+              :class="{ 'bg-danger': news.active == '0'||news.category.active==0 }"
             >
               <td scope="row">{{ page * 6 + key + 1 }}</td>
-              <td>{{ news.title }}</td>
+              <td>{{news.category.name}} <p v-if="news.category.active==0">(Đã xóa)</p> </td>
+              <td style="max-width:650px">{{ news.title }}</td>
               <td>{{ news.author.username }}</td>
               <td>
                 {{ news.date.slice(0, 10).split("-").reverse().join("/") }}
@@ -142,7 +144,7 @@
                   :to="{ path: '/newscontent', query: { id: news._id } }"
                   target="_blank"
                   style="color: black"
-                  v-if="news.active!=0"
+                  v-if="news.active!=0&&news.category.active==1"
                 >
                   <i class="fas fa-eye"></i>
                 </router-link>

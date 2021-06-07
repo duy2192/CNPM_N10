@@ -2,22 +2,25 @@
   <div class="main mb-4">
     <Header />
     <div class="container header">
-      <vueper-slides autoplay>
-        <vueper-slide
-          v-for="(news, i) in this.news.slice(0, 3)"
-          :pause-on-hover="true"
-          :key="i"
-          :title="news.title"
-          :image="news.image"
-          style="font-size: 25px"
-          class="text-light"
-        />
-      </vueper-slides>
-      <h1 class="text-center font-weight-bold mt-5">Tin Tức</h1>
+
+      <h1 class="text-center font-weight-bold mt-5">
+        {{ this.catename == undefined ? "Tin tức" : this.catename }}
+      </h1>
       <hr />
     </div>
 
     <div class="container main">
+      <span class="font-weight-bold mr-3 " style="font-size: 20px">Danh mục</span>
+      <select name="" id="" class="mt-3 mb-3" @change="changecate" style="height:40px">
+        <option value="">Tin tức</option>
+        <option
+          v-for="cate in this.Category"
+          :key="cate.name"
+          :value="`${cate._id + '_' + cate.name}`"
+        >
+          {{ cate.name }}
+        </option></select
+      ><br />
       <input
         type="search"
         class="border rounded mb-2"
@@ -27,28 +30,31 @@
         @keyup="searchnews"
       />
 
-      <div class="row mt-3" v-for="news in this.news" :key="news._id" @click="routerpush(news._id)">
+      <div
+        class="row mt-3"
+        v-for="news in this.news"
+        :key="news._id"
+        @click="routerpush(news._id)"
+      >
+        <div class="imagenews col-md-6 col-lg-4" v-if="news.author != null&&news.category.active==1">
+          <img
+            :srcset="`${news.image}`"
+            alt=""
+            style="width: 350px; height: 160px"
+          />
+        </div>
 
-          <div class="imagenews col-md-6 col-lg-4" v-if="news.author != null">
-            <img
-              :srcset="`${news.image}`"
-              alt=""
-              style="width: 350px; height: 160px"
-            />
-          </div>
-
-
-          <div
-            class="titlenews col-md-6 col-lg-8 title mt-3"
-            v-if="news.author != null"
-          >       
-            <h5 class="font-weight-bold" style="color: #0652dd">
-              {{ news.title }}
-            </h5>
-            <h6 style="color:#95a5a6">
-               {{ news.date.slice(0, 10).split("-").reverse().join("/") }}</h6>        
-
-          </div>
+        <div
+          class="titlenews col-md-6 col-lg-8 title mt-3"
+          v-if="news.author != null&&news.category.active==1"
+        >
+          <h5 class="font-weight-bold" style="color: #0652dd">
+            {{ news.title }}
+          </h5>
+          <h6 style="color: #95a5a6">
+            {{ news.date.slice(0, 10).split("-").reverse().join("/") }}
+          </h6>
+        </div>
       </div>
     </div>
 
@@ -86,16 +92,13 @@
 </template>
 <script>
 import Header from "@/components/Main/Header";
-import { getQueryNews } from "@/APIs/newsAPI";
-import { VueperSlides, VueperSlide } from "vueperslides";
+import { getQueryNews, getNewsbyCate } from "@/APIs/newsAPI";
+import { getCategory } from "@/APIs/categoryAPI";
 import "vueperslides/dist/vueperslides.css";
-import {
-    SERVER_NAME,
-    SERVER_PORT,
-} from '@/APIs/apiParameters'
+import { SERVER_NAME, SERVER_PORT } from "@/APIs/apiParameters";
 export default {
   name: "newsPage",
-  components: { Header, VueperSlides, VueperSlide },
+  components: { Header }, //VueperSlides, VueperSlide },
   data() {
     return {
       search: "",
@@ -104,13 +107,18 @@ export default {
       total: 0,
       title: "Test",
       SERVER_NAME,
-      SERVER_PORT
+      SERVER_PORT,
+      Category: null,
+      catename: undefined,
+      cateid:undefined
     };
   },
   async beforeCreate() {
     let news = await getQueryNews("", 0);
     this.news = news.data;
     this.total = news.total;
+    let category = await getCategory();
+    this.Category = category.data;
   },
   methods: {
     async nextpage() {
@@ -132,14 +140,37 @@ export default {
       this.total = news.total;
     },
     async searchnews() {
+      this.page=0
+      if(this.catename==undefined){
       let news = await getQueryNews(this.search.trim(), Number(this.page));
       this.news = news.data;
+      this.total = news.total;}else{
+        let news = await getNewsbyCate(this.cateid, this.search, this.page);
+      this.news = news.data;
       this.total = news.total;
+      }
     },
-      async routerpush(id) {
-        this.$router.push({ path: `/newscontent`, query: { id, page: this.page } });
+    async routerpush(id) {
+      this.$router.push({
+        path: `/newscontent`,
+        query: { id, page: this.page },
+      });
     },
-  
+    async changecate(e) {
+      let cateid = e.target.value.split("_")[0];
+      this.cateid=cateid
+      this.catename = e.target.value.split("_")[1];
+      if (this.catename == undefined) {
+        let news = await getQueryNews("", 0);
+        this.news = news.data;
+      } else {
+        this.page=0
+        let res = await getNewsbyCate(cateid, this.search, 0);
+        if (res.result == "ok") {
+          this.news = res.data;
+        }
+      }
+    },
   },
 };
 </script>
@@ -150,7 +181,7 @@ export default {
   margin-top: 160px;
 }
 .main {
-  margin-top: 100px;
+  margin-top: 60px;
 }
 .row {
   background-color: #fff;
@@ -174,6 +205,12 @@ a:hover {
 .next {
   background-color: #1abc9c;
   color: black;
+  border-radius: 20px;
+}
+select {
+  border-radius: 20px;
+}
+option {
   border-radius: 20px;
 }
 </style>

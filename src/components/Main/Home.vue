@@ -1,6 +1,20 @@
 <template>
   <div class="">
     <Header />
+    <div v-if="this.news != null">
+      <vueper-slides autoplay>
+        <vueper-slide
+          v-for="(news, i) in this.news.slice(0, 3)"
+          :pause-on-hover="true"
+          :key="i"
+          :title="news.title"
+          :image="news.image"
+          style="font-size: 25px"
+          class="text-light"
+          :link="'/#/newscontent?id='+news._id"
+        />
+      </vueper-slides>
+    </div>
     <div class="container box-vntg">
       <div class="">
         <div class="container text-center font-weight-bold">
@@ -140,9 +154,11 @@ import Header from "@/components/Main/Header";
 import data2 from "@/assets/data2.json";
 import data1 from "@/assets/data1.json";
 import data3 from "@/assets/datatp.json";
+import { VueperSlides, VueperSlide } from "vueperslides";
+import { getQueryNews } from "@/APIs/newsAPI";
 
 export default {
-  components: { Header },
+  components: { Header, VueperSlides, VueperSlide },
   name: "Home",
   data() {
     return {
@@ -151,12 +167,15 @@ export default {
       data3: [],
       option: 1,
       search: "",
+      news: null,
     };
   },
   async beforeCreate() {
     this.data2 = await data1;
     this.data1 = await data2;
     this.data3 = await data3;
+    let news = await getQueryNews("", 0);
+    this.news = news.data;
   },
   methods: {
     async changeoption(e) {
@@ -221,7 +240,7 @@ input {
   border-radius: 20px;
   width: 200px;
 }
-.delay{
+.delay {
   animation-delay: 0.25s;
 }
 </style>

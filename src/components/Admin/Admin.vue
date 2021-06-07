@@ -34,6 +34,13 @@
         </li>
         <li
           class="nav__items"
+          v-if="this.role == 2 "
+          @click="categorycl"
+        >
+          <p class="txtli font-weight-bold">Quản lý danh mục</p>
+        </li>
+        <li
+          class="nav__items"
           v-if="this.role == 2 || this.role == 1"
           @click="manageNewscl"
         >
@@ -54,7 +61,7 @@
         <managenews v-if="this.role == 2 && this.task == '1'" />
 
         <manageUser v-if="this.role == 2 && this.task == '0'" />           
-
+        <category v-if="this.role == 2 && this.task == '4'" />
         <news
           v-if="
             (this.role == 1 && (this.task == '1' ||this.task=='0')) ||
@@ -70,10 +77,11 @@
 <script>
 import managenews from "./ManageNews";
 import manageUser from "./ManageUser";
+import category from "./Category"
 import news from "./News";
 import {verifyUser} from '@/APIs/usersAPI'
 export default {
-  components: { managenews, manageUser, news },
+  components: { managenews, manageUser, news,category },
   name: "Admin",
   data() {
     return {
@@ -92,7 +100,7 @@ export default {
       let user = await this.$session.get("loggedInUser");
       this.token = user.tokenKey ? user.tokenKey : "";
       const verify= await verifyUser(this.token)
-      if(verify.result!='ok'){
+      if(verify.result!='ok'||verify.data.active<1){
         this.$session.destroy();
         this.$router.push("/login");
       }
@@ -127,6 +135,9 @@ export default {
       } else {
         this.avatar = "1";
       }
+    },
+    categorycl(){
+      this.task=4
     },
     changepasswd() {
       this.$router.push(`/resetpasswd?secretKey=${this.token}`);

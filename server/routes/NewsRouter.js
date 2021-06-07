@@ -7,6 +7,7 @@ const { PORT, SERVER } = require('../scripts/config')
 const {
     insertnewss,
     queryNews,
+    getNewsbyCate,
     // queryNewsByDateRange,
     getDetailNews,
     updateNews,
@@ -24,10 +25,10 @@ router.use((req, res, next) => {
 
 
 router.post('/insertNews1', async (req, res) => {
-    let { title, content,img } = req.body
+    let { title, content,img, cate } = req.body
     let tokenKey = req.headers['x-access-token']
     try {
-        let data = await insertnewss(title, content,img, tokenKey)
+        let data = await insertnewss(title, content,img,cate, tokenKey)
         res.json({
             result: 'ok',
             message: 'Thêm mới bài viết thành công',
@@ -152,6 +153,28 @@ router.get('/getNewsbyId', async (req, res) => {
         })
     }
 })
+
+
+router.get('/getNewsbyCate', async (req, res) => {
+    try {
+        let { id, text, page } = req.query
+        let news1 = await getNewsbyCate(id, text, page)
+        res.json({
+            result: 'ok',
+            message: 'Query thành công danh sách bài viết',
+            total: news1.total,
+            data: news1.news
+        })
+    } catch (error) {
+        res.json({
+            result: 'failed',
+            message: `Không thể lấy được danh sách bài viết.Lỗi : ${error}`
+        })
+    }
+})
+
+
+
 
 router.get('/queryNews', async (req, res) => {
     let { text, page } = req.query

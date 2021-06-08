@@ -36,7 +36,7 @@
         :key="news._id"
         @click="routerpush(news._id)"
       >
-        <div class="imagenews col-md-6 col-lg-4" v-if="news.author != null&&news.category.active==1">
+        <div class="imagenews col-md-6 col-lg-4" v-if="news.author != null&&news.category.active==1&&news.active==1">
           <img
             :srcset="`${news.image}`"
             alt=""
@@ -46,7 +46,7 @@
 
         <div
           class="titlenews col-md-6 col-lg-8 title mt-3"
-          v-if="news.author != null&&news.category.active==1"
+          v-if="news.author != null&&news.category.active==1&&news.active==1"
         >
           <h5 class="font-weight-bold" style="color: #0652dd">
             {{ news.title }}
@@ -110,7 +110,7 @@ export default {
       SERVER_PORT,
       Category: null,
       catename: undefined,
-      cateid:undefined
+      cateid:''
     };
   },
   async beforeCreate() {
@@ -126,18 +126,30 @@ export default {
         return;
       }
       this.page++;
+      if(this.cateid==''){
       let news = await getQueryNews(this.search.trim(), Number(this.page));
       this.news = news.data;
       this.total = news.total;
+    }else{
+      let news = await getNewsbyCate(this.cateid, this.search, this.page);
+      this.news = news.data;
+      this.total = news.total;
+    }
     },
     async prevpage() {
       if (this.page == 0) {
         return;
       }
       this.page--;
+      if(this.cateid==''){
       let news = await getQueryNews(this.search.trim(), Number(this.page));
       this.news = news.data;
       this.total = news.total;
+    }else{
+       let news = await getNewsbyCate(this.cateid, this.search, this.page);
+      this.news = news.data;
+      this.total = news.total;
+    }
     },
     async searchnews() {
       this.page=0

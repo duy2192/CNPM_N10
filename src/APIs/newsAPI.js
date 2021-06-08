@@ -14,6 +14,7 @@ const API_BLOCKNEWS = `${SERVER_NAME}:${SERVER_PORT}/news/blocknews`;
 const API_UNBLOCKNEWS = `${SERVER_NAME}:${SERVER_PORT}/news/unblocknews`;
 const API_UPLOADCKIMAGE = `${SERVER_NAME}:${SERVER_PORT}/news/uploadckimg`;
 const API_GETNEWSBYCATE = `${SERVER_NAME}:${SERVER_PORT}/news/getNewsbyCate`;
+const API_GETNEWSUSERBYCATE = `${SERVER_NAME}:${SERVER_PORT}/news/getNewsbyUserCate`;
 
 
 export const userInsertNews = async (title, content,img,cate, tokenKey) => {
@@ -77,6 +78,28 @@ export const getNewsbyID = async (id,text,page) => {
 export const getNewsbyCate = async (id,text,page) => {
     try {
         let response = await fetch(API_GETNEWSBYCATE + `?id=${id}&text=${text}&page=${page}`, {
+            method: 'GET',
+            headers: {
+                "Content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+
+            },
+        })
+        let responseJson = await response.json()
+        if (responseJson.result === 'ok') {
+            return responseJson
+        }
+        else {
+            return {}
+        }
+    } catch (error) {
+        return error
+    }
+}
+
+
+export const getNewsbyUserCate = async (id,idu,text,page) => {
+    try {
+        let response = await fetch(API_GETNEWSUSERBYCATE + `?id=${id}&idu=${idu}&text=${text}&page=${page}`, {
             method: 'GET',
             headers: {
                 "Content-type": "application/x-www-form-urlencoded; charset=UTF-8",

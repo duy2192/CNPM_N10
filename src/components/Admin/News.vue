@@ -123,7 +123,24 @@
         Không tìm thấy kết quả phù hợp
       </p>
     </div>
-
+<br />
+      <span class="font-weight-bold mr-3"  v-if="this.actionnews==0">Danh mục</span>
+      <select
+        name=""
+        id=""
+        class="mt-3 mb-3"
+        v-if="this.Category != null&&this.actionnews==0"
+        @change="changecate"
+      >
+        <option value="">Tin tức</option>
+        <option
+          v-for="cate in this.Category"
+          :key="cate.name"
+          :value="`${cate._id}`"
+        >
+          {{ cate.name }}
+        </option>
+      </select>
     <div class="mt-3" v-if="this.actionnews == '0'">
       <table
         class="table text-center table-bordered bg-info"
@@ -147,19 +164,19 @@
             :class="{ 'bg-danger': news.active != '1'||news.category.active==0  }"
          
           >
-            <td >{{ page * 6 + index + 1 }}</td>
-            <td>{{news.category.name}} <p v-if="news.category.active==0">(Đã xóa)</p> </td>
-            <td style="max-width: 650px" scope="row">{{ news.title }}</td>
-            <td>{{ news.date.slice(0, 10).split("-").reverse().join("/") }}</td>
-            <td>{{ news.active == "1" ? "Ok" : "Blocked" }}</td>
-            <td>
+            <td v-if="news.author._id==userloggedin._id">{{ page * 6 + index + 1 }}</td>
+            <td v-if="news.author._id==userloggedin._id">{{news.category.name}} <p v-if="news.category.active==0">(Đã xóa)</p> </td>
+            <td v-if="news.author._id==userloggedin._id" style="max-width: 650px" scope="row">{{ news.title }}</td>
+            <td v-if="news.author._id==userloggedin._id">{{ news.date.slice(0, 10).split("-").reverse().join("/") }}</td>
+            <td v-if="news.author._id==userloggedin._id">{{ news.active == "1" ? "Ok" : "Blocked" }}</td>
+            <td v-if="news.author._id==userloggedin._id">
               <i class="fas fa-edit" @click="editnews(news._id)"></i
               ><i
                 class="ml-3 fas fa-trash-alt"
                 @click="deletenews(news._id)"
               ></i>
             </td>
-            <td>
+            <td v-if="news.author._id==userloggedin._id">
               <router-link
                 :to="{ path: '/newscontent', query: { id: news._id } }"
                 target="_blank"
@@ -213,6 +230,8 @@ import {
   deleteNewsbyId,
   getdetailnews,
   updateNews,
+  getNewsbyUserCate
+
 } from "@/APIs/newsAPI"; //Call APIs
 import { getCategory } from "@/APIs/categoryAPI";
 import { SERVER_NAME, SERVER_PORT } from "@/APIs/apiParameters"; //Địa chỉ Client
@@ -251,6 +270,7 @@ export default {
   methods: {
     // Các phương thức (Hàm)
     addnews() {
+      this.cateid=''
       if (this.actionnews == "0") {
         this.actionnews = "1";
       } else {
@@ -324,6 +344,7 @@ export default {
       }
     },
     async editnews(id) {
+      
       let detailnews = await getdetailnews(id);
       if (detailnews.result == "ok") {
         this.actionnews = "3";
@@ -361,18 +382,27 @@ export default {
       }
     },
     async searchnews() {
+      this.page=0
+      if(this.cateid==''){
       let news = await getNewsbyID(
         this.userloggedin._id,
         this.search.trim(),
         this.page
       );
-      this.news = news.data;
+      this.news = news.data;}else{
+        let res = await getNewsbyUserCate(this.cateid,this.userloggedin._id, this.search, this.page);
+        if (res.result == "ok") {
+          this.news = res.data;
+          this.total = res.total;
+        }
+      }
     },
     async nextpage() {
       if (this.page == this.total) {
         return;
       }
       this.page++;
+      if(this.cateid==''){
       let news = await getNewsbyID(
         this.userloggedin._id,
         this.search.trim(),
@@ -381,6 +411,12 @@ export default {
       if (news.result == "ok") {
         this.news = news.data;
         this.total = news.total;
+      }}else{
+        let res = await getNewsbyUserCate(this.cateid,this.userloggedin._id, this.search, this.page);
+        if (res.result == "ok") {
+          this.news = res.data;
+          this.total = res.total;
+        }
       }
     },
     async prevpage() {
@@ -388,6 +424,7 @@ export default {
         return;
       }
       this.page--;
+      if(this.cateid==''){
       let news = await await getNewsbyID(
         this.userloggedin._id,
         this.search.trim(),
@@ -395,15 +432,40 @@ export default {
       );
       this.news = news.data;
       this.total = news.total;
+    }else{
+              let res = await getNewsbyUserCate(this.cateid,this.userloggedin._id, this.search, this.page);
+        if (res.result == "ok") {
+          this.news = res.data;
+                this.total = res.total;
+        }
+    }
     },
     uploader(editor) {
       editor.plugins.get("FileRepository").createUploadAdapter = (loader) => {
         return new UploadAdapter(loader);
       };
     },
-    changecate(e) {
-      this.cateid = e.target.value;
-      console.log(this.cateid);
+   async changecate(e) {
+      let cateid = e.target.value;
+      this.cateid = cateid;
+      if (cateid == "") {
+        let news =  await getNewsbyID(
+        this.userloggedin._id,
+        this.search.trim(),
+        this.page
+        
+      );
+        this.news = news.data;
+        this.total = news.total;
+      } else {
+        this.page = 0;
+        let res = await getNewsbyUserCate(cateid,this.userloggedin._id, this.search, 0);
+        if (res.result == "ok") {
+          this.news = res.data;
+          this.total = res.total;
+
+        }
+      }
     },
   },
 };

@@ -121,6 +121,48 @@ const getNewsbyCate = async (id, text, page = 0) => {
     }
 }
 
+const getNewsbyUserCate = async (id,idu, text, page = 0) => {
+    // eslint-disable-next-line no-useless-catch
+    try {
+        let countnews = await Newss.find({
+            author:idu,
+            category: id, 
+            $or: [
+                {
+                    title: new RegExp(text, "i")
+                    //i => ko phân biệt hoa/thường
+                },
+                {
+                    content: new RegExp(text, "i")
+                }
+            ],
+        })
+        let total = countnews.length
+        let news = await Newss.find({
+            author:idu,
+            category: id, $or: [
+                {
+                    title: new RegExp(text, "i")
+                    //i => ko phân biệt hoa/thường
+                },
+                {
+                    content: new RegExp(text, "i")
+                }
+            ],
+        }, {}, {
+            sort: {
+                date: -1
+            }
+        }).skip(page * 6).limit(6).populate('author').populate({path:'category'}).exec()
+        return {
+            total:total / 6,
+            news: news
+        }
+    } catch (error) {
+        throw error
+    }
+}
+
 const queryNews = async (text, page = 0) => {
     // eslint-disable-next-line no-useless-catch
     try {
@@ -346,5 +388,6 @@ module.exports = {
     getNewsbyId,
     blockNews,
     unblockNews,
-    getNewsbyCate
+    getNewsbyCate,
+    getNewsbyUserCate
 }

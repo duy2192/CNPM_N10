@@ -15,7 +15,8 @@ const {
     verifyFileExtensions,
     getNewsbyId,
     blockNews,
-    unblockNews
+    unblockNews,
+    getNewsbyUserCate
 } = require('../models/models/Posts')
 router.use((req, res, next) => {
     console.log('Time: ', Date.now()) //Time log
@@ -174,7 +175,23 @@ router.get('/getNewsbyCate', async (req, res) => {
 })
 
 
-
+router.get('/getNewsbyUserCate', async (req, res) => {
+    try {
+        let { id,idu, text, page } = req.query
+        let news1 = await getNewsbyUserCate(id,idu, text, page)
+        res.json({
+            result: 'ok',
+            message: 'Query thành công danh sách bài viết',
+            total: news1.total,
+            data: news1.news
+        })
+    } catch (error) {
+        res.json({
+            result: 'failed',
+            message: `Không thể lấy được danh sách bài viết.Lỗi : ${error}`
+        })
+    }
+})
 
 router.get('/queryNews', async (req, res) => {
     let { text, page } = req.query
